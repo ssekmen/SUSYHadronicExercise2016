@@ -27,23 +27,23 @@ void general2(unsigned int id, int nEvts = -1) {
   // --- Declare the Output Histograms ---------------------------------
   TH1* hNJets = new TH1D("hNJets",";N(jets);N(events)",9,3,12);
   hNJets->Sumw2();
-  TH1* hHt = new TH1D("hHt",";H_{T} [GeV]",25,500,3000);
+  TH1* hHt = new TH1D("hHt",";H_{T} [GeV]",50,500,3000);
   hHt->Sumw2();
   hHt->GetXaxis()->SetNdivisions(505);
-  TH1* hMht = new TH1D("hMht",";#slash{H}_{T} [GeV]",20,200,1200);
+  TH1* hMht = new TH1D("hMht",";#slash{H}_{T} [GeV]",40,200,1400);
   hMht->Sumw2();
   hMht->GetXaxis()->SetNdivisions(505);
-  std::vector<TH1*> hJetPt(3,NULL);
-  std::vector<TH1*> hJetPhi(3,NULL);
-  std::vector<TH1*> hJetEta(3,NULL);
-  std::vector<TH1*> hDeltaPhi(3,NULL);
+  std::vector<TH1*> hJetPt(4,NULL);
+  std::vector<TH1*> hJetPhi(4,NULL);
+  std::vector<TH1*> hJetEta(4,NULL);
+  std::vector<TH1*> hDeltaPhi(4,NULL);
   for(unsigned int i = 0; i < hJetPt.size(); ++i) {
     TString name = "hJetPt_";
     name += i;
     TString title = ";p_{T}(jet ";
     title += i+1;
     title += ") [GeV];N(events)";
-    hJetPt.at(i) = new TH1D(name,title,30,0,1500);
+    hJetPt.at(i) = new TH1D(name,title,50,0,1500);
     hJetPt.at(i)->Sumw2();
 
     name = "hJetPhi_";
@@ -67,7 +67,7 @@ void general2(unsigned int id, int nEvts = -1) {
     title = ";#Delta#phi(#slash{#vec{H}}_{T},jet ";
     title += i+1;
     title += ");N(events)";
-    hDeltaPhi.at(i) = new TH1D(name,title,24,0,4);
+    hDeltaPhi.at(i) = new TH1D(name,title,40,0,4);
     hDeltaPhi.at(i)->Sumw2();
   }
 
@@ -136,7 +136,7 @@ void general2(unsigned int id, int nEvts = -1) {
 
         double phiMHT = std::atan2(selMHTy, selMHTx);
 
-        vector<double> dphiVec = ntper.calcDPhi( (*ntper.jetsLVec), phiMHT, 3, dphiArr);
+        vector<double> dphiVec = ntper.calcDPhi( (*ntper.jetsLVec), phiMHT, 4, dphiArr);
 
         double weight = 1.0;
         weight *= ntper.evtWeight;

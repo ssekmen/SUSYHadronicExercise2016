@@ -31,20 +31,20 @@ void general1(unsigned int id, int nEvts = -1) {
   TH1* hHt = new TH1D("hHt",";H_{T} [GeV]",30,0,3000);
   hHt->Sumw2();
   hHt->GetXaxis()->SetNdivisions(505);
-  TH1* hMht = new TH1D("hMht",";#slash{H}_{T} [GeV]",24,0,1200);
+  TH1* hMht = new TH1D("hMht",";#slash{H}_{T} [GeV]",40,0,1200);
   hMht->Sumw2();
   hMht->GetXaxis()->SetNdivisions(505);
-  std::vector<TH1*> hJetPt(3,NULL);
-  std::vector<TH1*> hJetPhi(3,NULL);
-  std::vector<TH1*> hJetEta(3,NULL);
-  std::vector<TH1*> hDeltaPhi(3,NULL);
+  std::vector<TH1*> hJetPt(4,NULL);
+  std::vector<TH1*> hJetPhi(4,NULL);
+  std::vector<TH1*> hJetEta(4,NULL);
+  std::vector<TH1*> hDeltaPhi(4,NULL);
   for(unsigned int i = 0; i < hJetPt.size(); ++i) {
     TString name = "hJetPt_";
     name += i;
     TString title = ";p_{T}(jet ";
     title += i+1;
     title += ") [GeV];N(events)";
-    hJetPt.at(i) = new TH1D(name,title,30,0,1500);
+    hJetPt.at(i) = new TH1D(name,title,50,0,1500);
     hJetPt.at(i)->Sumw2();
 
     name = "hJetPhi_";
@@ -68,7 +68,7 @@ void general1(unsigned int id, int nEvts = -1) {
     title = ";#Delta#phi(#slash{#vec{H}}_{T},jet ";
     title += i+1;
     title += ");N(events)";
-    hDeltaPhi.at(i) = new TH1D(name,title,24,0,4);
+    hDeltaPhi.at(i) = new TH1D(name,title,40,0,4);
     hDeltaPhi.at(i)->Sumw2();
   }
 
@@ -88,7 +88,8 @@ void general1(unsigned int id, int nEvts = -1) {
 
   for(unsigned int is=0; is<samples.size(); is++){
      
-     TChain * chn = new TChain("stopTreeMaker/AUX");
+     //TChain * chn = new TChain("tree");
+     TChain * chn = new TChain("TreeMaker2/PreSelection");
      chn->Add(samples[is]);
 
      NTupleReader ntper(chn);
@@ -109,15 +110,17 @@ void general1(unsigned int id, int nEvts = -1) {
 
         if( nevtProcessed == 1 || nevtProcessed == toProcessedEvts || nevtProcessed%(toProcessedEvts/10) ==0 ) std::cout<<"  processing the "<<nevtProcessed<<"th event"<<std::endl;
 
-        int selMuons = 0;
+        int selMuons = 0;	
         for(unsigned int im=0; im<ntper.muonsLVec->size(); ++im){
-           if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsRelIso->at(im)<0.2 ) ++selMuons;
+	  //KH if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsRelIso->at(im)<0.2 ) ++selMuons;
+	  if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsMiniIso->at(im)<0.2) ++selMuons;
         }
+
         int selElectrons = 0;
         for(unsigned int ie=0; ie<ntper.elesLVec->size(); ie++){
 //          bool isEB = std::abs(elesLVec->at(ie).Eta()) < 1.479 ? true : false;
 //           unsigned int idx = isEB ? 0 : 1;
-           if( ntper.elesLVec->at(ie).Pt() > 10 && std::abs(ntper.elesLVec->at(ie).Eta())<2.4 && ntper.elesRelIso->at(ie)<0.15 ) ++selElectrons;
+	  if( ntper.elesLVec->at(ie).Pt() > 10 && std::abs(ntper.elesLVec->at(ie).Eta())<2.4 && ntper.elesMiniIso->at(ie)<0.1) ++selElectrons;
         }
         if( selMuons != 0 ) continue;
         if( selElectrons !=0 ) continue;
@@ -145,6 +148,33 @@ void general1(unsigned int id, int nEvts = -1) {
         if( id == 14 && is ==0 && ntper.run == 1 && ntper.lumi == 119397 && ntper.event == 11933645 ) continue;
 	//>>> PLACE DELTA PHI COMPUTATION HERE
 
+	//KH-------------
+        // Delta phi between the MHT vector and the jet for the leading MHT jets
+	std::vector<double> deltaPhis(4,9999.);
+        const float phiMht = std::atan2(selMHTy,selMHTx);
+
+        // Loop over reco jets: remember, they are ordered in pt!        
+	unsigned int nMhtJets = 0;
+        for(unsigned int jetIdx = 0; jetIdx < ntper.jetsLVec->size(); ++jetIdx) {
+
+          // Select MHT jets
+          if( ntper.jetsLVec->at(jetIdx).Pt() > 30 && std::abs(ntper.jetsLVec->at(jetIdx).Eta() ) < 5.0 ) {
+
+            // Compute delta phi (per convention in sector between -Pi and Pi)
+            // between this jet and the MHT vector
+            const float deltaPhi = TVector2::Phi_mpi_pi(ntper.jetsLVec->at(jetIdx).Phi() - phiMht );
+            // Store deltaPhi
+            deltaPhis.at(nMhtJets) = std::abs(deltaPhi);
+
+            // Increase counter for MHT jets
+            ++nMhtJets;
+            // DeltaPhi cut only for first three jets
+            // Leave jet loop if the first 3 MHT jets tested
+            if( nMhtJets == 4 ) break;
+          }   // End of MHT-jet criterion
+        } // End of loop over reco jets
+	//KH-------------
+
 	// Fill histograms
         hNJets->Fill(selNJet, weight);
         hHt->Fill(selHT, weight);
@@ -155,7 +185,9 @@ void general1(unsigned int id, int nEvts = -1) {
            hJetEta.at(ih)->Fill(ntper.jetsLVec->at(ih).Eta(), weight);
            hJetPhi.at(ih)->Fill(ntper.jetsLVec->at(ih).Phi(), weight);
         }
-
+	if (deltaPhis.size()>0) hDeltaPhi.at(0)->Fill(deltaPhis.at(0),weight);
+	if (deltaPhis.size()>1) hDeltaPhi.at(1)->Fill(deltaPhis.at(1),weight);
+	if (deltaPhis.size()>2) hDeltaPhi.at(2)->Fill(deltaPhis.at(2),weight);
      }
 
      if(chn) delete chn;
