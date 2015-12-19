@@ -372,6 +372,7 @@ void NTupleReader::populateBranchList()
     branchMap_["selectedIDMuons"]  = &muonsLVec;
     branchMap_["selectedIDElectrons"]  = &elesLVec;
     branchMap_["Jets"]  = &jetsLVec;
+    branchMap_["BTags"] = &BTags;
 
     //branchMap_["genDecayLVec"]  = &genDecayLVec;
 

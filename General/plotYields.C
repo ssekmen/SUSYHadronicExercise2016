@@ -36,8 +36,10 @@ void plotYields() {
   for(int bin = 1; bin <= hYields[0]->GetNbinsX(); ++bin) {
     std::cout << hYields[0]->GetXaxis()->GetBinLabel(bin) << " : \t" << std::flush;
     for(int s = 0; s < kNSamples; ++s) {
-      std::cout << hYields[s]->GetBinContent(bin) << " +/-" << std::flush;
-      std::cout << hYields[s]->GetBinError(bin) << "  \t" << std::flush;
+      printf("%10.4f +/- ",hYields[s]->GetBinContent(bin));
+      printf("%8.4f :",hYields[s]->GetBinError(bin));
+      //std::cout << hYields[s]->GetBinContent(bin) << " +/-" << std::flush;
+      //std::cout << hYields[s]->GetBinError(bin) << "  \t" << std::flush;
     }
     std::cout << std::endl;
   }

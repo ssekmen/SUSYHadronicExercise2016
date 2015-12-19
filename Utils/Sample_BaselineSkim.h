@@ -64,43 +64,45 @@ std::vector<TString> Sample::fileNameFullSample(unsigned int id, std::vector<dou
     //name = path_+"PU20bx25_WJetsToLNu_HT-200to400_madgraph-tauola/*.root"; nameVec.push_back(name); xSecVec.push_back(471.6); nEvtVec.push_back(4686783);
     //name = path_+"PU20bx25_WJetsToLNu_HT-400to600_madgraph-tauola/*.root"; nameVec.push_back(name); xSecVec.push_back(55.61); nEvtVec.push_back(4640594);
     //name = path_+"PU20bx25_WJetsToLNu_HT-600toInf_madgraph-tauola/*.root"; nameVec.push_back(name); xSecVec.push_back(18.81); nEvtVec.push_back(4581841);
-    name = path_+"Run2ProductionV5/*WJetsToLNu_HT-100To200*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*WJetsToLNu_HT-200To400*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*WJetsToLNu_HT-400To600*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*WJetsToLNu_HT-600To800*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*WJetsToLNu_HT-800To1200*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*WJetsToLNu_HT-2500ToInf*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //Commented out 100-200 for speed-up
+    //name = path_+"Skims/Run2ProductionV5/tree_signal/*WJetsToLNu_HT-100To200*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*WJetsToLNu_HT-200to400*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*WJetsToLNu_HT-400to600*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*WJetsToLNu_HT-600to800*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*WJetsToLNu_HT-800to1200*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*WJetsToLNu_HT-2500toInf*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 12  ){
     //name = path_+"Skims/Run2ProductionV5/tree_signal/tree_TTJets_SingleLeptFromT.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
     //name = path_+"Skims/Run2ProductionV5/tree_signal/tree_TTJets_SingleLeptFromTbar.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
     //name = path_+"Run2ProductionV5/*TTJets*SingleLeptFromTbar*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*TTJets_TuneCUETP8M1*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*tree_TTJets_SingleLeptFromT.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*tree_TTJets_SingleLeptFromTbar.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 13 ){
     //name = path_+"PU20bx25_ZJetsToNuNu_HT-200to400-madgraph-tauola/*.root"; nameVec.push_back(name); xSecVec.push_back(100.8); nEvtVec.push_back(4546470);
     //name = path_+"PU20bx25_ZJetsToNuNu_HT-400to600-madgraph-tauola/*.root"; nameVec.push_back(name); xSecVec.push_back(11.99); nEvtVec.push_back(4433784);
     //name = path_+"PU20bx25_ZJetsToNuNu_HT-600toInf-madgraph-tauola/*.root"; nameVec.push_back(name); xSecVec.push_back(4.113); nEvtVec.push_back(4463806);
-    name = path_+"Run2ProductionV5/*ZJetsToNuNu_HT-100To200*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*ZJetsToNuNu_HT-200To400*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*ZJetsToNuNu_HT-400To600*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*ZJetsToNuNu_HT-600ToInf*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*ZJetsToNuNu_HT-100to200*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*ZJetsToNuNu_HT-200to400*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*ZJetsToNuNu_HT-400to600*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*ZJetsToNuNu_HT-600toInf*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 14 ){
     //name = path_+"PU20bx25_QCD_HT_250to500_13TeV-madgraph/*.root"; nameVec.push_back(name); xSecVec.push_back(670500); nEvtVec.push_back(2004219+663953);
     //name = path_+"PU20bx25_QCD_HT_500to1000_13TeV-madgraph/*.root"; nameVec.push_back(name); xSecVec.push_back(26740); nEvtVec.push_back(3214312+849033);
     //name = path_+"PU20bx25_QCD_HT_1000toInf_13TeV-madgraph/*.root"; nameVec.push_back(name); xSecVec.push_back(769.7); nEvtVec.push_back(1130720+333733);
     //Commented out 200-300 for speed-up
-    //name = path_+"Run2ProductionV5/*QCD_HT200to300*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*QCD_HT300to500*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*QCD_HT500to700*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*QCD_HT700to1000*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*QCD_HT1000to1500*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*QCD_HT1500to2000*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Run2ProductionV5/*QCD_HT2000toInf*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //name = path_+"Skims/Run2ProductionV5/tree_signal/*QCD_HT-200to300*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*QCD_HT-300to500*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*QCD_HT-500to700*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*QCD_HT-700to1000*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*QCD_HT1000to1500*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*QCD_HT1500to2000*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/*QCD_HT2000toInf*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 21  ){
     //name = path_+"PU20bx25_T1tttt_mGl-1500_mLSP-100-madgraph-tauola/slimmed_stopFlatNtuples_1.root"; nameVec.push_back(name); xSecVec.push_back(0.0141903); nEvtVec.push_back(105679);
-    name = path_+"Run2ProductionV5/*T1tttt_mGluino-1500_mLSP-100*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/tree_T1tttt_1500_100.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 22  ){
     //name = path_+"PU20bx25_T1tttt_mGl-1200_mLSP-800-madgraph-tauola/slimmed_stopFlatNtuples_1.root"; nameVec.push_back(name); xSecVec.push_back(0.0856418); nEvtVec.push_back(100322);
-    name = path_+"Run2ProductionV5/*T1tttt_mGluino-1200_mLSP-800*.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/Run2ProductionV5/tree_signal/tree_T1tttt_1200_800.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   }
 
   return nameVec;

@@ -24,7 +24,7 @@ public:
 
   // Returns result of search-bin selection (to be applied on top
   // of baseline selection)
-  static unsigned int searchBin(double ht, double mht, unsigned int nJets);
+  static unsigned int searchBin(double ht, double mht, unsigned int nJets, int nBtags);
 
   // Cut values for HT jets
   static float htJetPtMin() { return 30.; }
@@ -37,21 +37,37 @@ public:
 };
 
 
-unsigned int Selection::searchBin(double ht, double mht, unsigned int nJets) {
+unsigned int Selection::searchBin(double ht, double mht, unsigned int nJets, int nBtags) {
   unsigned int bin = 0;
 
-  if( nJets >= 8 ) {
-    
-    if( ht > 1000 ) {
+  //
+  //if (nBtags>=2){
 
-      if(      mht > 200 && mht < 400 ) bin = 1;
-      else if( mht > 400 && mht < 600 ) bin = 2;
-      else if( mht > 600 && mht < 800 ) bin = 3;
-      else if( mht > 800              ) bin = 4;
+  if( nJets >= 7 && nJets <=8 ) {
+    
+    if( ht > 800 ) {
+
+      if(      mht > 200 && mht < 500 ) bin = 1;
+      else if( mht > 500 && mht < 750 ) bin = 2;
+      else if( mht > 750              ) bin = 3;
 
     }
 
   }    
+  if( nJets >= 9 ) {
+    
+    if( ht > 800 ) {
+
+      if(      mht > 200 && mht < 500 ) bin = 4;
+      else if( mht > 500 && mht < 750 ) bin = 5;
+      else if( mht > 750              ) bin = 6;
+
+    }
+
+  }
+  //}
+  //
+
   return bin;
 }
 #endif

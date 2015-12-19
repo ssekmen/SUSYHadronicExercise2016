@@ -8,7 +8,7 @@
 #include "TVector2.h"
 
 #include "../Utils/Event.h"
-#include "../Utils/Sample.h"
+#include "../Utils/Sample_BaselineSkim.h"
 #include "../Utils/Selection.h"
 #include "../Utils/NTupleReader.h"
 
@@ -73,7 +73,7 @@ void general2(unsigned int id, int nEvts = -1) {
 
   // Event yields in the different RA2 search bins
   // First bin (around 0) is baseline selection
-  TH1* hYields = new TH1D("hYields",";;N(events)",5,-0.5,4.5);
+  TH1* hYields = new TH1D("hYields",";;N(events)",7,-0.5,6.5);
   hYields->Sumw2();
   hYields->GetXaxis()->SetBinLabel(1,"baseline");
   for(int bin = 2; bin <= hYields->GetNbinsX(); ++bin) {
@@ -87,7 +87,8 @@ void general2(unsigned int id, int nEvts = -1) {
 
   for(unsigned int is=0; is<samples.size(); is++){
 
-     TChain * chn = new TChain("stopTreeMaker/AUX");
+    //TChain * chn = new TChain("stopTreeMaker/AUX");
+    TChain * chn = new TChain("tree");
      chn->Add(samples[is]);
 
      NTupleReader ntper(chn);
@@ -110,13 +111,13 @@ void general2(unsigned int id, int nEvts = -1) {
 
         int selMuons = 0;
         for(unsigned int im=0; im<ntper.muonsLVec->size(); im++){
-           if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsRelIso->at(im)<0.2 ) selMuons++;
+           if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsMiniIso->at(im)<0.2 ) selMuons++;
         }
         int selElectrons = 0;
         for(unsigned int ie=0; ie<ntper.elesLVec->size(); ie++){
 //          bool isEB = std::abs(elesLVec->at(ie).Eta()) < 1.479 ? true : false;
 //           unsigned int idx = isEB ? 0 : 1;
-           if( ntper.elesLVec->at(ie).Pt() > 10 && std::abs(ntper.elesLVec->at(ie).Eta())<2.4 && ntper.elesRelIso->at(ie)<0.15 ) selElectrons++;
+           if( ntper.elesLVec->at(ie).Pt() > 10 && std::abs(ntper.elesLVec->at(ie).Eta())<2.4 && ntper.elesMiniIso->at(ie)<0.1 ) selElectrons++;
         }
         if( selMuons != 0 ) continue;
         if( selElectrons !=0 ) continue;
@@ -138,9 +139,12 @@ void general2(unsigned int id, int nEvts = -1) {
 
         vector<double> dphiVec = ntper.calcDPhi( (*ntper.jetsLVec), phiMHT, 4, dphiArr);
 
+	//std::cout << ntper.BTags << std::endl;
+
         double weight = 1.0;
         weight *= ntper.evtWeight;
-        
+	weight *= scaleToLumi;
+
     // Apply the NJets baseline-cut
         if( !Selection::nJets(selNJet) ) continue;
 
@@ -149,7 +153,7 @@ void general2(unsigned int id, int nEvts = -1) {
         if( !Selection::mht(selMHT) ) continue;
 
     // Apply the delta-phi cuts
-        if( !Selection::deltaPhi(dphiVec[0],dphiVec[1],dphiVec[2]) ) continue;
+        if( !Selection::deltaPhi(dphiVec[0],dphiVec[1],dphiVec[2],dphiVec[3]) ) continue;
 
 // Skipping one problematic QCD event in the low HT sample (MHT ~ 715.595 GeV)
         if( id == 14 && is ==0 && ntper.run == 1 && ntper.lumi == 119397 && ntper.event == 11933645 ) continue;
@@ -170,7 +174,7 @@ void general2(unsigned int id, int nEvts = -1) {
         hYields->Fill(0.,weight);	// This is after the baseline selection
 
     // Apply the search-bin selection (tighter than baseline)
-       const unsigned int searchBin = Selection::searchBin(selHT,selMHT,selNJet);
+       const unsigned int searchBin = Selection::searchBin(selHT,selMHT,selNJet,ntper.BTags);
        if( searchBin > 0 ) {
           hYields->Fill(searchBin,weight);
        }
