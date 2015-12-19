@@ -1,0 +1,22 @@
+imax  1  number of channels
+jmax  1  number of backgrounds
+kmax  6  number of nuisance parameters (sources of systematic uncertainties)
+------------
+## observed events
+bin          0 
+observation  62
+------------
+
+## expected events
+bin                   0        0     
+process               signal   total 
+process               0        1     
+rate                  5.55312  62.939
+------------
+signal_stat lnN        1.02772  -      
+signal_systematic lnN  1.1      -      
+signal_trigger lnN     1        -      
+total_trigger lnN      -        1      
+totbkg_stat lnN        -        1.11039
+totbkg_systematic lnN  -        1.3001 
+------------
