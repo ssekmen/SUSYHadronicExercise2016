@@ -9,10 +9,6 @@ root -l PhotonCR_input.C
 
 The following will print the prediction in 6 bins
 root -l Prediction.C
+
 ```
-```
-cmsrel CMSSW_7_4_15
-cd CMSSW_7_4_15/src/
-cmsenv
-git clone -b das2016_exercise git@github.com:hatakeyamak/SUSYHadronicExercise2016.git
-```
+
