@@ -11,7 +11,7 @@ void PhotonCR_Input(){
      st.SetPars(gStyle);
      
      //Creates a root file that will store all the histograms needed for prediction later
-     TFile *f =new TFile("PhotonCR_input.root","RECREATE"); 
+     TFile *f =new TFile("PhotonCR_Input.root","RECREATE"); 
      //Location of Ntuples
      TString InputFilePath="/eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/Run2ProductionV5/";
      
