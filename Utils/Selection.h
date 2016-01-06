@@ -45,22 +45,23 @@ unsigned int Selection::searchBin(double ht, double mht, unsigned int nJets, int
 
   if( nJets >= 7 && nJets <=8 ) {
     
-    if( ht > 800 ) {
+    if( ht > 500 ) {
 
-      if(      mht > 200 && mht < 500 ) bin = 1;
-      else if( mht > 500 && mht < 750 ) bin = 2;
-      else if( mht > 750              ) bin = 3;
+      if(      mht > 200 && mht < 500 && nBtags==2 ) bin = 1;
+      else if( mht > 200 && mht < 500 && nBtags>=3 ) bin = 2;
+      else if( mht > 500 && mht < 750 && nBtags>=2)  bin = 3;
+      //else if( mht > 750              ) bin = 3;
 
     }
 
   }    
   if( nJets >= 9 ) {
     
-    if( ht > 800 ) {
+    if( ht > 500 ) {
 
-      if(      mht > 200 && mht < 500 ) bin = 4;
-      else if( mht > 500 && mht < 750 ) bin = 5;
-      else if( mht > 750              ) bin = 6;
+      if(      mht > 200 && mht < 500 && nBtags==2 ) bin = 4;
+      else if( mht > 200 && mht < 500 && nBtags>=3 ) bin = 5;
+      else if( mht > 500 && mht < 750 && nBtags>=2)  bin = 6;
 
     }
 

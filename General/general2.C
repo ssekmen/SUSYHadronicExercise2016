@@ -2,16 +2,19 @@
 #include <iostream>
 #include <vector>
 
+#include "TChain.h"
+#include "TFile.h"
 #include "TH1.h"
 #include "TH1D.h"
 #include "TString.h"
 #include "TVector2.h"
+#include "TLorentzVector.h"
+#include "TFileCollection.h"
 
-#include "../Utils/Event.h"
+//KH #include "../Utils/Event.h"
 #include "../Utils/Sample_BaselineSkim.h"
 #include "../Utils/Selection.h"
 #include "../Utils/NTupleReader.h"
-
 
 // Simulated background and data yields.
 //
@@ -87,7 +90,6 @@ void general2(unsigned int id, int nEvts = -1) {
 
   for(unsigned int is=0; is<samples.size(); is++){
 
-    //TChain * chn = new TChain("stopTreeMaker/AUX");
     TChain * chn = new TChain("tree");
      chn->Add(samples[is]);
 
@@ -109,20 +111,25 @@ void general2(unsigned int id, int nEvts = -1) {
 
         if( nevtProcessed == 1 || nevtProcessed == toProcessedEvts || nevtProcessed%(toProcessedEvts/10) ==0 ) std::cout<<"  processing the "<<nevtProcessed<<"th event"<<std::endl;
 
+    // Apply the event cleaning
+	if (!(ntper.vtxSize>0)) continue;
+	if (!(ntper.eeBadScFilter)) continue;
+	if (!(ntper.HBHENoiseFilter)) continue;
+	if (!(ntper.HBHEIsoNoiseFilter)) continue;
+
+    // Apply lepton vetoes
         int selMuons = 0;
         for(unsigned int im=0; im<ntper.muonsLVec->size(); im++){
            if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsMiniIso->at(im)<0.2 ) selMuons++;
         }
         int selElectrons = 0;
         for(unsigned int ie=0; ie<ntper.elesLVec->size(); ie++){
-//          bool isEB = std::abs(elesLVec->at(ie).Eta()) < 1.479 ? true : false;
-//           unsigned int idx = isEB ? 0 : 1;
            if( ntper.elesLVec->at(ie).Pt() > 10 && std::abs(ntper.elesLVec->at(ie).Eta())<2.4 && ntper.elesMiniIso->at(ie)<0.1 ) selElectrons++;
         }
         if( selMuons != 0 ) continue;
         if( selElectrons !=0 ) continue;
 
-    // Calculate the jet-based RA2 selection variables
+	// Calculate the jet-based RA2 selection variables
         int selNJet = 0; // Number of jets with pt > 50 GeV and |eta| < 2.5 (`HT jets')
         double selHT = 0; // HT, computed from jets with pt > 50 GeV and |eta| < 2.5 (`HT jets')
         double selMHT = 0; // cmponents of MHT,  computed from jets with pt > 30 GeV (`MHT jets')
@@ -132,14 +139,37 @@ void general2(unsigned int id, int nEvts = -1) {
         selHT = ntper.calcHT();
         selMHT = ntper.calcMHT();
 
+	if (selNJet!=ntper.NJets||selHT!=ntper.HT||selMHT!=ntper.MHT){
+	printf("Njet,HT,MHT on the fly:   %6d, %8.3f, %8.3f\n",
+	       selNJet,selHT,selMHT);
+	printf("Njet,HT,MHT from ntuples: %6d, %8.3f, %8.3f\n",
+	       ntper.NJets,ntper.HT,ntper.MHT);	
+	}
+
         vector<double> compMHTvec = ntper.calcMHTxy();
         selMHTx = compMHTvec[0]; selMHTy = compMHTvec[1];
-
         double phiMHT = std::atan2(selMHTy, selMHTx);
-
         vector<double> dphiVec = ntper.calcDPhi( (*ntper.jetsLVec), phiMHT, 4, dphiArr);
 
-	//std::cout << ntper.BTags << std::endl;
+        vector<double> dphiVec_fromNtuple; 
+	dphiVec_fromNtuple.insert(dphiVec_fromNtuple.end(), 
+				  {ntper.DeltaPhi1,ntper.DeltaPhi2,ntper.DeltaPhi3,ntper.DeltaPhi4});
+
+	if (!std::equal ( dphiVec_fromNtuple.begin(), dphiVec_fromNtuple.end(), dphiVec.begin() )){
+	  printf("jetpt:              %8.4f, %8.4f, %8.4f, %8.4f\n",
+		 ntper.jetsLVec->at(0).Pt(),
+		 ntper.jetsLVec->at(1).Pt(),
+		 ntper.jetsLVec->at(2).Pt(),
+		 ntper.jetsLVec->at(3).Pt());
+	  printf("jeteta:             %8.4f, %8.4f, %8.4f, %8.4f\n",
+		 ntper.jetsLVec->at(0).Eta(),
+		 ntper.jetsLVec->at(1).Eta(),
+		 ntper.jetsLVec->at(2).Eta(),
+		 ntper.jetsLVec->at(3).Eta());
+	  printf("dphiVec:            %8.4f, %8.4f, %8.4f, %8.4f\n",dphiVec[0],dphiVec[1],dphiVec[2],dphiVec[3]);
+	  printf("dphiVec_fromNtuple: %8.4f, %8.4f, %8.4f, %8.4f\n",
+		 dphiVec_fromNtuple[0],dphiVec_fromNtuple[1],dphiVec_fromNtuple[2],dphiVec_fromNtuple[3]);
+	}
 
         double weight = 1.0;
         weight *= ntper.evtWeight;
@@ -155,8 +185,10 @@ void general2(unsigned int id, int nEvts = -1) {
     // Apply the delta-phi cuts
         if( !Selection::deltaPhi(dphiVec[0],dphiVec[1],dphiVec[2],dphiVec[3]) ) continue;
 
-// Skipping one problematic QCD event in the low HT sample (MHT ~ 715.595 GeV)
-        if( id == 14 && is ==0 && ntper.run == 1 && ntper.lumi == 119397 && ntper.event == 11933645 ) continue;
+    // Apply the isotrack vetoes
+	if (!(ntper.isoMuonTracks==0)) continue;
+	if (!(ntper.isoElectronTracks==0)) continue;
+	if (!(ntper.isoPionTracks==0)) continue;
 
     // Fill histograms
         hNJets->Fill(selNJet, weight);
@@ -172,11 +204,13 @@ void general2(unsigned int id, int nEvts = -1) {
         for(unsigned int ih=0; ih < hDeltaPhi.size(); ++ih) hDeltaPhi[ih]->Fill(dphiVec[ih], weight);
 
         hYields->Fill(0.,weight);	// This is after the baseline selection
+        //hYields->Fill(0.,1.);	// This is after the baseline selection
 
     // Apply the search-bin selection (tighter than baseline)
        const unsigned int searchBin = Selection::searchBin(selHT,selMHT,selNJet,ntper.BTags);
        if( searchBin > 0 ) {
-          hYields->Fill(searchBin,weight);
+	 hYields->Fill(searchBin,weight);
+	 //hYields->Fill(searchBin,1.);
        }
      }
      if( chn ) delete chn;

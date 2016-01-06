@@ -35,10 +35,7 @@
 //                                    minAbsEta, maxAbsEta, minPt, maxPt
 static const double      pt30Arr[] = {   -1,        -1,      30,    -1  };
 static const double pt30Eta24Arr[] = {   -1,       2.4,      30,    -1  };
-static const double pt30Eta25Arr[] = {   -1,       2.5,      30,    -1  };
-static const double pt50Eta25Arr[] = {   -1,       2.5,      50,    -1  };
-static const double pt70Eta25Arr[] = {   -1,       2.5,      70,    -1  };
-static const double      dphiArr[] = {   -1,       5.0,      30,    -1  };
+static const double      dphiArr[] = {   -1,       2.4,      30,    -1  };
 
 static const double expectedLumi = 2200; // in pb-1 --> equivalent to 2.2 fb-1
 
@@ -73,16 +70,34 @@ public:
     std::vector<TLorentzVector> *trksForIsoVetoLVec, *loose_isoTrksLVec;
 
   // Declaration of leaf types
+  Int_t           BTags;
+  Double_t        HT;
+  Double_t        MHT;
+  Double_t        MHT_Phi;
+  Int_t           NJets;
+  Double_t        DeltaPhi1;
+  Double_t        DeltaPhi2;
+  Double_t        DeltaPhi3;
+  Double_t        DeltaPhi4;
+  Int_t           isoElectronTracks;
+  Int_t           isoMuonTracks;
+  Int_t           isoPionTracks;
+  Bool_t          JetID;
+  Bool_t          CSCTightHaloFilter;
+  Bool_t          HBHEIsoNoiseFilter;
+  Bool_t          HBHENoiseFilter;
+  Int_t           eeBadScFilter;
+  /*
   UInt_t          RunNum;
   UInt_t          LumiBlockNum;
   ULong64_t       EvtNum;
   vector<TLorentzVector> *bestPhoton;
-  Int_t           BTags;
+  */
+  /*
   Int_t           BTagsclean;
   Double_t        CaloMETPhi;
   Double_t        CaloMETPt;
   Double_t        CrossSection;
-  Bool_t          CSCTightHaloFilter;
   Double_t        DeltaPhi1;
   Double_t        DeltaPhi1clean;
   Double_t        DeltaPhi2;
@@ -92,7 +107,6 @@ public:
   Double_t        DeltaPhi4;
   Double_t        DeltaPhi4clean;
   Int_t           EcalDeadCellTriggerPrimitiveFilter;
-  Int_t           eeBadScFilter;
   vector<int>     *ElectronCharge;
   vector<TLorentzVector> *Electrons;
   vector<double>  *GenDeltaPhi;
@@ -128,18 +142,11 @@ public:
   vector<TLorentzVector> *GenTauLeadTrk;
   vector<TLorentzVector> *GenTauNu;
   vector<TLorentzVector> *GenTaus;
-  Bool_t          HBHEIsoNoiseFilter;
-  Bool_t          HBHENoiseFilter;
-  Double_t        HT;
   Double_t        HTclean;
   vector<bool>    *HTJetsMask;
-  Int_t           isoElectronTracks;
   vector<TLorentzVector> *IsolatedElectronTracksVeto;
   vector<TLorentzVector> *IsolatedMuonTracksVeto;
   vector<TLorentzVector> *IsolatedPionTracksVeto;
-  Int_t           isoMuonTracks;
-  Int_t           isoPionTracks;
-  Bool_t          JetID;
   vector<TLorentzVector> *Jets;
   vector<double>  *Jets_bDiscriminatorCSV;
   vector<double>  *Jets_bDiscriminatorMVA;
@@ -181,7 +188,6 @@ public:
   vector<TLorentzVector> *NeutrinoLorentzVector;
   vector<int>     *NeutrinoMotherPdg;
   vector<int>     *NeutrinoPdg;
-  Int_t           NJets;
   Int_t           NJetsclean;
   Int_t           nTAPElectronTracks;
   Int_t           nTAPMuonTracks;
@@ -265,6 +271,7 @@ public:
   Double_t        Weight;
   Int_t           ZNum;
   vector<TLorentzVector> *Zp4;
+  */
 
     NTupleReader(TTree * tree);
 
@@ -322,7 +329,7 @@ NTupleReader::NTupleReader(TTree * tree)
     //vectors must be initialized to 0 here to avoid segfaults.  This cannot be done 
     //in clearTuple() as it will cause memory leaks.
     muonsCharge = muonsMtw = muonsRelIso = elesCharge = elesMtw = elesRelIso = 0;
-    muonsMiniIso = elesMiniIso = 0 ; //KH added
+    muonsMiniIso = elesMiniIso = 0 ; 
     recoJetsBtag_0 = trksForIsoVeto_charge = trksForIsoVeto_dz = 0;
     loose_isoTrks_charge = loose_isoTrks_dz = 0;
     loose_isoTrks_iso = loose_isoTrks_mtw = 0;
@@ -352,6 +359,7 @@ void NTupleReader::activateBranches()
 
 void NTupleReader::populateBranchList()
 {
+
     branchMap_["RunNum"]   = &run;
     branchMap_["EvtNum"] = &event;
     branchMap_["LumiBlockNum"]  = &lumi;   
@@ -359,21 +367,35 @@ void NTupleReader::populateBranchList()
     branchMap_["NVtx"]  = &vtxSize;
     branchMap_["selectedIDMuons_MiniIso"]  = &muonsMiniIso;
     branchMap_["selectedIDElectrons_MiniIso"]  = &elesMiniIso;
+    branchMap_["Muons"]  = &muonsLVec;
+    branchMap_["Electrons"]  = &elesLVec;
+    branchMap_["Jets"]  = &jetsLVec;
+    branchMap_["BTags"] = &BTags;
+    branchMap_["DeltaPhi1"] = &DeltaPhi1;
+    branchMap_["DeltaPhi2"] = &DeltaPhi2;
+    branchMap_["DeltaPhi3"] = &DeltaPhi3;
+    branchMap_["DeltaPhi4"] = &DeltaPhi4;
+    branchMap_["isoElectronTracks"]  = &isoElectronTracks;
+    branchMap_["isoMuonTracks"]      = &isoMuonTracks;
+    branchMap_["isoPionTracks"]      = &isoPionTracks;
+    branchMap_["JetID"]              = &JetID;
+    branchMap_["CSCTightHaloFilter"] = &CSCTightHaloFilter;
+    branchMap_["HBHEIsoNoiseFilter"] = &HBHEIsoNoiseFilter;
+    branchMap_["HBHENoiseFilter"]    = &HBHENoiseFilter;
+    branchMap_["eeBadScFilter"]      = &eeBadScFilter;
+    branchMap_["MHT"] = &MHT;
+    branchMap_["MHT_Phi"] = &MHT_Phi;
+    branchMap_["HT"] = &HT;
+    branchMap_["NJets"] = &NJets;
+
     //branchMap_["muonsRelIso"]  = &muonsRelIso;
     //branchMap_["elesRelIso"]  = &elesRelIso;
-
     //branchMap_["genDecayIdxVec"]  = &genDecayIdxVec;
     //branchMap_["genDecayPdgIdVec"]  = &genDecayPdgIdVec;
     //branchMap_["genDecayMomIdxVec"]  = &genDecayMomIdxVec;
     //branchMap_["W_emuVec"]  = &W_emuVec;
     //branchMap_["W_tau_emuVec"]  = &W_tau_emuVec;
     //branchMap_["W_tau_prongsVec"]  = &W_tau_prongsVec;
-
-    branchMap_["selectedIDMuons"]  = &muonsLVec;
-    branchMap_["selectedIDElectrons"]  = &elesLVec;
-    branchMap_["Jets"]  = &jetsLVec;
-    branchMap_["BTags"] = &BTags;
-
     //branchMap_["genDecayLVec"]  = &genDecayLVec;
 
 }
@@ -442,13 +464,13 @@ vector<double> NTupleReader::calcDPhi(const vector<TLorentzVector> &inputJets, c
 }
 
 double NTupleReader::calcHT(const vector<TLorentzVector> &inputJets, const double *jetCutsArr){
-   double HT = 0;
+   double tempHT = 0;
    for(unsigned int ij=0; ij<inputJets.size(); ++ij){
       vector<TLorentzVector> dummyVec; dummyVec.push_back(inputJets.at(ij));
       if( !countJets(dummyVec, jetCutsArr) ) continue;
-      HT += inputJets.at(ij).Pt();
+      tempHT += inputJets.at(ij).Pt();
    }
-   return HT;
+   return tempHT;
 }
 
 vector<double> NTupleReader::calcMHTxy(const vector<TLorentzVector> &inputJets, const double *jetCutsArr){
