@@ -17,26 +17,26 @@ Commands to run the code
 Step1:
 ```
 The following will produce necessary histograms necessary for ZgammaRatio,Double Ratio and prediction 
-root -l ControlRegion_Input.C+
+root -l -q ControlRegion_Input.C+
 
 ```
 Step2:
 
 ```
 The following code will produce SigmaIetaIeta distrbutions in different regions of phase space need for purity study.Running this code will produce a root file named PhotonCR_Input.root
-root -l PhotonCR_Input.C+
+root -l -q PhotonCR_Input.C+
 ```
 Step3:
 Prerequisite :previous step
 
 ```
 A simple code has been put to get the purity fits for barrel photons. histograms used  here has a set of loose selection.
-root -l FitDataEB.C 
+root -l -q FitDataEB.C 
 ```
 Step4:
 The phenomenological ZgammaRatio is being determined in this step.
 ```
-root -l ZGammaRatio.C 
+root -l -q ZGammaRatio.C 
 
 ```
 Step5:Double Ratio
@@ -46,7 +46,7 @@ is comming soon!!
 Step6: Prediction
 This is the final step of the estimation process , here we will combine all the individual pieces of information. 
 ```
-root -l Prediction.C
+root -l -q Prediction.C
 ```
 
 
