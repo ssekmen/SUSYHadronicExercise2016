@@ -1,5 +1,6 @@
 A preliminary set of code has been put  to get background estimates in 6 analysis bins defined as follows
-
+Binning
+```
 1: 7-8 jets, 2 b-jets, 200 < MHT < 500
 
 2: 7-8 jets, 3+ b-jets, 200 < MHT < 500
@@ -11,7 +12,7 @@ A preliminary set of code has been put  to get background estimates in 6 analysi
 5: 9+ jets, 3+ b-jets, 200 < MHT < 500
 
 6: 9+ jets, 2+ b-jets, MHT > 500
-
+```
 Commands to run the code
 Step1:
 ```
