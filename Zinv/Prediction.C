@@ -63,6 +63,9 @@ void Prediction(){
 
      int NumBins = 6;
 
+   
+    cout<<"Bin Nobs nEB  pEB  pEBerr nEC   pEC  pECerr  ZgR  REr1   RErUp RErLow  f   ferr     purityT(pErr)  DR     DRup  DRlow    Yield   YstatUp YstatLow YsysUp YsysLow "<<endl;
+
 
      for(int iBin=1;iBin<=NumBins;iBin++){//looping over bins
 
