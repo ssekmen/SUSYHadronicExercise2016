@@ -11,7 +11,7 @@
 #include "TLorentzVector.h"
 
 //#include "../Utils/Event.h"
-#include "../Utils/Sample.h"
+#include "../Utils/Sample_signal.h"
 #include "../Utils/NTupleReader.h"
 
 // Investigation of SM background and signal event properties.
@@ -90,8 +90,7 @@ void general1(unsigned int id, int nEvts = -1) {
 
   for(unsigned int is=0; is<samples.size(); is++){
      
-     //TChain * chn = new TChain("tree");
-     TChain * chn = new TChain("TreeMaker2/PreSelection");
+     TChain * chn = new TChain("tree");
      chn->Add(samples[is]);
 
      NTupleReader ntper(chn);
@@ -143,9 +142,11 @@ void general1(unsigned int id, int nEvts = -1) {
         double phiMHT = std::atan2(selMHTy, selMHTx);
 
         double weight = 1.0;
+	if (id!=1){
         weight *= ntper.evtWeight;
         weight *= scaleToLumi;
-
+	}
+	
 	// Skipping one problematic QCD event in the low HT sample (MHT ~ 715.595 GeV)
         if( id == 14 && is ==0 && ntper.run == 1 && ntper.lumi == 119397 && ntper.event == 11933645 ) continue;
 	//>>> PLACE DELTA PHI COMPUTATION HERE
@@ -190,6 +191,7 @@ void general1(unsigned int id, int nEvts = -1) {
 	if (deltaPhis.size()>0) hDeltaPhi.at(0)->Fill(deltaPhis.at(0),weight);
 	if (deltaPhis.size()>1) hDeltaPhi.at(1)->Fill(deltaPhis.at(1),weight);
 	if (deltaPhis.size()>2) hDeltaPhi.at(2)->Fill(deltaPhis.at(2),weight);
+	if (deltaPhis.size()>3) hDeltaPhi.at(3)->Fill(deltaPhis.at(3),weight);
      }
 
      if(chn) delete chn;

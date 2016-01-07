@@ -5,12 +5,17 @@
 //         matthias.schroeder@AT@desy.de
 //         November 2013
 
+#include "../Utils/Sample.h"
+#include "../Utils/StyleMatters.h"
+#include "../Utils/HistReader.h"
 
 // === Main Function ===================================================
 void plotYields() {
+  /*
   gROOT->ProcessLine(".L ../Utils/Sample.h++");
   gROOT->ProcessLine(".L ../Utils/StyleMatters.h++");
   gROOT->ProcessLine(".L ../Utils/HistReader.h++");
+  */
   StyleMatters::init();
 
 

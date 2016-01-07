@@ -12,7 +12,7 @@
 #include "TFileCollection.h"
 
 //KH #include "../Utils/Event.h"
-#include "../Utils/Sample_BaselineSkim.h"
+#include "../Utils/Sample_signal.h"
 #include "../Utils/Selection.h"
 #include "../Utils/NTupleReader.h"
 
@@ -116,6 +116,7 @@ void general2(unsigned int id, int nEvts = -1) {
 	if (!(ntper.eeBadScFilter)) continue;
 	if (!(ntper.HBHENoiseFilter)) continue;
 	if (!(ntper.HBHEIsoNoiseFilter)) continue;
+	if (!(ntper.JetID)) continue;
 
     // Apply lepton vetoes
         int selMuons = 0;
@@ -172,8 +173,10 @@ void general2(unsigned int id, int nEvts = -1) {
 	}
 
         double weight = 1.0;
+	if (id!=1){
         weight *= ntper.evtWeight;
-	weight *= scaleToLumi;
+        weight *= scaleToLumi;
+	}
 
     // Apply the NJets baseline-cut
         if( !Selection::nJets(selNJet) ) continue;

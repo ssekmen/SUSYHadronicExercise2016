@@ -42,14 +42,14 @@ void plotSampleComparison(const TString &graphicsFormat = "png") {
   const int canSize = 500;
 
 
-  const int kNSamples = 5;
-  unsigned int ids[kNSamples] = { 11, 12, 13, 21, 22 };
+  const int kNSamples = 6;
+  unsigned int ids[kNSamples] = { 11, 12, 13, 14, 21, 22 };
 
 
   TH1* hNJets[kNSamples];
   TH1* hHt[kNSamples];
   TH1* hMht[kNSamples];
-  const int kNJetHists = 3;
+  const int kNJetHists = 4;
   TH1* hJetPt[kNJetHists][kNSamples];
   TH1* hJetEta[kNJetHists][kNSamples];
   TH1* hDeltaPhi[kNJetHists][kNSamples];

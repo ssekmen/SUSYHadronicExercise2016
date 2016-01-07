@@ -53,8 +53,12 @@ std::vector<TString> Sample::fileNameFullSample(unsigned int id, std::vector<dou
 
   std::vector<TString> nameVec;
   TString name("");
-//  if(      id ==  1  ) name += "HTMHT-Run2012.root";
-//  else if( id ==  2  ) name += "MuHad.root";
+  if(      id ==  1  ){
+    name = path_+"Skims/CMSDAS2016/tree_signal/tree_HTMHT_re2015C.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/CMSDAS2016/tree_signal/tree_HTMHT_re2015D.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"Skims/CMSDAS2016/tree_signal/tree_HTMHT_2015Db.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+  }
+  //else if( id ==  2  ) name += "MuHad.root";
 
   if( id == 11  ){
     name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-100to200.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
