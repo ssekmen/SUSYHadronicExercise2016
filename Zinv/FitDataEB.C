@@ -21,7 +21,6 @@
 #include "TCanvas.h"
 #include "TString.h"
 #include "TDirectory.h"
-#include "ReadTreePurity.cc"
 #include "SetStyle.C"
 
 using namespace std;
