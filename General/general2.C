@@ -12,7 +12,7 @@
 #include "TFileCollection.h"
 
 //KH #include "../Utils/Event.h"
-#include "../Utils/Sample_signal.h"
+#include "../Utils/Sample.h"
 #include "../Utils/Selection.h"
 #include "../Utils/NTupleReader.h"
 
@@ -192,6 +192,10 @@ void general2(unsigned int id, int nEvts = -1) {
 	if (!(ntper.isoMuonTracks==0)) continue;
 	if (!(ntper.isoElectronTracks==0)) continue;
 	if (!(ntper.isoPionTracks==0)) continue;
+
+	if (id==12){
+	  if (ntper.genHT>600.) continue;
+	}
 
     // Fill histograms
         hNJets->Fill(selNJet, weight);

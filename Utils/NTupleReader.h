@@ -87,6 +87,7 @@ public:
   Bool_t          HBHEIsoNoiseFilter;
   Bool_t          HBHENoiseFilter;
   Int_t           eeBadScFilter;
+  Double_t        genHT;
   /*
    UInt_t          RunNum;
    UInt_t          LumiBlockNum;
@@ -104,7 +105,6 @@ public:
    vector<TLorentzVector> *Electrons;
    vector<double>  *GenElec_MT2Activity;
    vector<TLorentzVector> *GenEls;
-   Double_t        genHT;
    vector<double>  *GenMu_MT2Activity;
    vector<TLorentzVector> *GenMus;
    vector<TLorentzVector> *GenTaus;
@@ -261,6 +261,7 @@ void NTupleReader::populateBranchList()
     branchMap_["MHT_Phi"] = &MHT_Phi;
     branchMap_["HT"] = &HT;
     branchMap_["NJets"] = &NJets;
+    branchMap_["genHT"] = &genHT;
 
     //branchMap_["muonsRelIso"]  = &muonsRelIso;
     //branchMap_["elesRelIso"]  = &elesRelIso;

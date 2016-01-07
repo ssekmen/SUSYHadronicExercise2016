@@ -11,14 +11,8 @@
 
 // === Main Function ===================================================
 void plotYields() {
-  /*
-  gROOT->ProcessLine(".L ../Utils/Sample.h++");
-  gROOT->ProcessLine(".L ../Utils/StyleMatters.h++");
-  gROOT->ProcessLine(".L ../Utils/HistReader.h++");
-  */
+
   StyleMatters::init();
-
-
 
   const int kNSamples = 6;
   unsigned int ids[kNSamples] = { 11, 12, 13, 14, 21, 22 };
@@ -43,8 +37,6 @@ void plotYields() {
     for(int s = 0; s < kNSamples; ++s) {
       printf("%10.4f +/- ",hYields[s]->GetBinContent(bin));
       printf("%8.4f :",hYields[s]->GetBinError(bin));
-      //std::cout << hYields[s]->GetBinContent(bin) << " +/-" << std::flush;
-      //std::cout << hYields[s]->GetBinError(bin) << "  \t" << std::flush;
     }
     std::cout << std::endl;
   }

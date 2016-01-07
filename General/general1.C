@@ -11,7 +11,7 @@
 #include "TLorentzVector.h"
 
 //#include "../Utils/Event.h"
-#include "../Utils/Sample_signal.h"
+#include "../Utils/Sample.h"
 #include "../Utils/NTupleReader.h"
 
 // Investigation of SM background and signal event properties.

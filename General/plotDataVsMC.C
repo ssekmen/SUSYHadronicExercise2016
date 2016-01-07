@@ -29,11 +29,7 @@ void setStyle(TH1* h, unsigned int id) {
 
 // === Main Function ===================================================
 void plotDataVsMC(const TString &graphicsFormat = "png") {
-  /*
-  gROOT->ProcessLine(".L ../Utils/Sample.h+");
-  gROOT->ProcessLine(".L ../Utils/StyleMatters.h+");
-  gROOT->ProcessLine(".L ../Utils/HistReader.h+");
-  */
+
   StyleMatters::init();
   const int canSize = 500;
 

@@ -27,17 +27,12 @@ void setStyle(TH1* h, unsigned int id) {
 void plotSample(unsigned int id,
 		bool afterSelection = false,
 		const TString &graphicsFormat = "png") {
-  /*
-  gROOT->ProcessLine(".L ../Utils/Sample.h+");
-  gROOT->ProcessLine(".L ../Utils/StyleMatters.h+");
-  gROOT->ProcessLine(".L ../Utils/HistReader.h+");
-  */
+
   StyleMatters::init();
   const int canSize = 500;
 
   std::cout << "Plotting distributions for '" << Sample::toTString(id) << "' sample" << std::endl;
   const TString fileName = afterSelection ? ("General_"+Sample::toTString(id)+"-Yields.root") : ("General_"+Sample::toTString(id)+".root");
-
  
   // Get histograms from file
   TH1* hNJets = HistReader::get(fileName,"hNJets");
