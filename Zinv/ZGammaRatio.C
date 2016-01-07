@@ -63,6 +63,7 @@ void ZGammaRatio(){
        double SF=0.99;
        double SFup=1.04;
        double SFlow=0.94;
+       double ZgR_woSF=h_ZgR->GetBinContent(ibin);
        double ZgRcentral=h_ZgR->GetBinContent(ibin)/SF;
        double ZgRup=h_ZgR->GetBinContent(ibin)/SFup;
        double ZgRlow=h_ZgR->GetBinContent(ibin)/SFlow;
@@ -70,6 +71,10 @@ void ZGammaRatio(){
        double ZgRsysErrup=fabs(ZgRcentral-ZgRlow);
        double ZgRsysErrlow=fabs(ZgRcentral-ZgRup);
        double ZgRstatErr=h_ZgR->GetBinError(ibin)/SF;
+
+
+       cout<<"Bin Num "<<ibin<<":  "<<"ZgR_WO_SF: "<<ZgR_woSF<<"    ZgR_W_SF: "<<ZgRcentral<<endl;
+
        binNumber[ibin-1]=ibin;
        ZgRwSF[ibin-1]=ZgRcentral;
        ZgRwSF_sys_ErrUp[ibin-1]=ZgRsysErrup;

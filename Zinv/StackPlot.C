@@ -125,7 +125,7 @@ class DataMC{
 
     double scaleFactor=h1->Integral()/(h2->Integral()+hnp->Integral());
     
-    cout<<"Data/MC: "<<h1->Integral()/(h2->Integral()+hnp->Integral())<<endl;  
+    cout<<variable<<" Data/MC: "<<h1->Integral()/(h2->Integral()+hnp->Integral())<<endl;  
 
     TH1F *hAllData=(TH1F*)h1->Clone("hAllData");
     TH1F *hAllMC=(TH1F*)h2->Clone("hAllMC");
@@ -180,7 +180,6 @@ class DataMC{
     tpav_txt->AddText("#gamma p_{T} > 100 ");
     tpav_txt->AddText("N_{jets} >=4");
     tpav_txt->AddText("H_{T}^{miss}>200");
-    //tpav_txt->AddText("N_{b-jets}>=2");
     tpav_txt->AddText("#Delta #Phi_{1,2,3,4}>(0.5,0.5,0.3,0.3)");
     tpav_txt->AddText(region);
     tpav_txt->AddText(dataMCSF);       
@@ -215,8 +214,6 @@ class DataMC{
 
     hs->Add(hnp);
     hs->Add(hP);
-    //cout<<"Prompt: "<<hP->Integral()<<endl;
-    //cout<<"non Prompt: "<<hnp->Integral()<<endl;
    
    
     TPaveText *pCMS = new TPaveText(0.132107,0.9308003,0.8327759,0.9923583,"brNDC");
@@ -323,10 +320,6 @@ class DataMC{
     char pName[100];
 
     sprintf(pName,"%s.png",plotname);
-    c->SaveAs(pName);
-    sprintf(pName,"%s.gif",plotname);
-    c->SaveAs(pName);
-    sprintf(pName,"%s.pdf",plotname);
     c->SaveAs(pName);
 
 
