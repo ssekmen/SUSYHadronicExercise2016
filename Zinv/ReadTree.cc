@@ -26,9 +26,10 @@ class ReadTree {
     double         MHT;
     int            NJets;
     int            BTags;
-    double         DeltaPhi1clean;
-    double         DeltaPhi2clean;
-    double         DeltaPhi3clean;
+    double         DeltaPhi1;
+    double         DeltaPhi2;
+    double         DeltaPhi3;
+    double         DeltaPhi4;
     double         Weight;
     double        puWeight;
     vector<double>  *photon_sigmaIetaIeta;
@@ -39,6 +40,8 @@ class ReadTree {
     vector<string>  *TriggerNames;
     vector<bool>    *TriggerPass;
     vector<int>     *TriggerPrescales;
+    vector<TLorentzVector> *ZCandidates;
+
 
     TBranch        *b_NVtx;   //!
     TBranch        *b_eeBadScFilter;
@@ -52,9 +55,10 @@ class ReadTree {
     TBranch        *b_MHT;   //!
     TBranch        *b_NJets;   //!
     TBranch        *b_BTags;   //!
-    TBranch        *b_DeltaPhi1clean;   //!
-    TBranch        *b_DeltaPhi2clean;   //!
-    TBranch        *b_DeltaPhi3clean;   //!
+    TBranch        *b_DeltaPhi1;   //!
+    TBranch        *b_DeltaPhi2;   //!
+    TBranch        *b_DeltaPhi3;   //!
+    TBranch        *b_DeltaPhi4;   //!
     TBranch        *b_Weight;   //!
     TBranch        *b_puWeight;   //!
     TBranch        *b_photonCands;   //!
@@ -65,6 +69,8 @@ class ReadTree {
     TBranch        *b_TriggerPass;   //!
     TBranch        *b_TriggerPrescales;   //!
     TBranch        *b_photon_nonPrompt;   //!
+    TBranch        *b_ZCandidates;   //!
+
 
     ReadTree(TTree *tree);
 
@@ -76,17 +82,36 @@ class ReadTree {
     int photonIndex();
 
     //baseline selection function
-    bool PassBaseLine();
+    bool BaselineLoose();
 
+    bool PassIDISo();
+ 
     bool isBarrelPhoton();
     bool isEndcapPhoton();
+    
+    bool PASStriggerGJ();
+    bool PASStriggerDYm();
 
-    bool PASStrigger();
+
 
     //As different condtions are required for different Samples so three different fuctions
-    bool PASS_PhotonCRForGJets();
-    bool PASS_PhotonCRForQCD();
-    bool PASS_PhotonCRForData();
+    bool PASS_PhotonCR_GJetsMC();
+    bool PASS_PhotonCR_GJetsData();
+    bool PASS_PhotonCR_QCDMC();
+    bool PASS_DoubleMuCR_DYmMC();
+    bool PASS_DoubleMuCR_DYmData();  
+    bool PASS_DoubleMuCR_TTJetsMC();
+   
+
+    bool IchSR();//charged Isolation signal region
+    bool IchSB(); //charged isolation side band
+
+    bool Prompt();
+    bool nonPrompt();
+  
+
+
+
 
 
 
@@ -116,6 +141,8 @@ class ReadTree {
    TriggerPass = 0;
    TriggerPrescales = 0;
    photon_nonPrompt = 0;
+   ZCandidates = 0;
+
 
    fChain->SetBranchAddress("RunNum", &RunNum, &b_RunNum);
    fChain->SetBranchAddress("LumiBlockNum", &LumiBlockNum, &b_LumiBlockNum);
@@ -132,9 +159,10 @@ class ReadTree {
    fChain->SetBranchAddress("MHT", &MHT, &b_MHT);
    fChain->SetBranchAddress("NJets", &NJets, &b_NJets);
    fChain->SetBranchAddress("BTags", &BTags, &b_BTags);
-   fChain->SetBranchAddress("DeltaPhi1clean", &DeltaPhi1clean, &b_DeltaPhi1clean);
-   fChain->SetBranchAddress("DeltaPhi2clean", &DeltaPhi2clean, &b_DeltaPhi2clean);
-   fChain->SetBranchAddress("DeltaPhi3clean", &DeltaPhi3clean, &b_DeltaPhi3clean);
+   fChain->SetBranchAddress("DeltaPhi1", &DeltaPhi1, &b_DeltaPhi1);
+   fChain->SetBranchAddress("DeltaPhi2", &DeltaPhi2, &b_DeltaPhi2);
+   fChain->SetBranchAddress("DeltaPhi3", &DeltaPhi3, &b_DeltaPhi3);
+   fChain->SetBranchAddress("DeltaPhi4", &DeltaPhi4, &b_DeltaPhi4);
    fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
    fChain->SetBranchAddress("puWeight", &puWeight, &b_puWeight);
    fChain->SetBranchAddress("photonCands", &photonCands, &b_photonCands);
@@ -145,16 +173,15 @@ class ReadTree {
    fChain->SetBranchAddress("TriggerNames", &TriggerNames, &b_TriggerNames);
    fChain->SetBranchAddress("TriggerPass", &TriggerPass, &b_TriggerPass);
    fChain->SetBranchAddress("TriggerPrescales", &TriggerPrescales, &b_TriggerPrescales);
-
+   fChain->SetBranchAddress("ZCandidates", &ZCandidates, &b_ZCandidates);
 
 }
-
-    bool ReadTree::PassBaseLine(){
+    
+    bool ReadTree::BaselineLoose(){
 
     bool pass=false;
-    int Bin_Number= BinNumber();
 
-    if(Bin_Number > -1 ){//bin number > -1 ensures baseline cut is applied 
+    if(HT>500. && MHT>200 && NJets>=4 && DeltaPhi1>0.5 && DeltaPhi2> 0.5 && DeltaPhi3> 0.3 && DeltaPhi4>0.3 ){//bin 
        pass=true;
       }
 
@@ -167,7 +194,6 @@ class ReadTree {
 
 
 
-
     
 int ReadTree::photonIndex(){//photon index
 
@@ -175,11 +201,10 @@ int ReadTree::photonIndex(){//photon index
     TLorentzVector BestPhoton;
     BestPhoton=bestPhoton->at(0);
     int index=-1;
-    for(int iPh=0;iPh<photonCands->size();iPh++){
+    for(unsigned int iPh=0;iPh<photonCands->size();iPh++){
        TLorentzVector iPhoton=photonCands->at(iPh);
       
-       double DeltaR=BestPhoton.DeltaR(iPhoton);       
-               if(BestPhoton==iPhoton){
+               if(BestPhoton==iPhoton  ){
                   index=iPh;          
 
        }
@@ -192,49 +217,76 @@ int ReadTree::photonIndex(){//photon index
 
     
 
+    bool ReadTree::PassIDISo(){
+     bool Pass=false;
 
-       //member function to compute the bin numbers
+     int Phindex=photonIndex();
+
+     if(Phindex > -1 && isBarrelPhoton()==true && photon_sigmaIetaIeta->at(Phindex) < 0.0107 && photon_pfChargedIsoRhoCorr->at(Phindex) <2.67   ){
+
+         Pass =true;
+        }else if(Phindex > -1 && isEndcapPhoton()==true && photon_sigmaIetaIeta->at(Phindex) < 0.0272 && photon_pfChargedIsoRhoCorr->at(Phindex) <1.79){
+       
+        Pass = true;
+
+          }else{
+          
+        Pass = false;
+         
+          }
+    
+
+     return Pass;
+
+
+     }
+
+
+
+
+
+
+       
     int ReadTree::BinNumber(){
     
-    if( MHT < 200 || HT < 800 || NJets < 7 ) return -1 ;
+    if( MHT < 200 || HT < 500 || NJets < 7 || BTags <2 || DeltaPhi1<0.5 || DeltaPhi2< 0.5 || DeltaPhi3 < 0.3 || DeltaPhi4 <0.3  ) return -1 ;
 
-    int binMHT = -1;
-    int binBJet = -1;
+    int binNum = -1;
+    
 
-    if( MHT > 200 && MHT < 500 ){
+    if( NJets>=7 && NJets <=8 && MHT > 200 && MHT < 500 && BTags==2 ){
 
-      //low MHT
-      binMHT = 1;
+      
+      binNum = 1;
 
-    }else if( MHT > 500 && MHT < 750 ){
+    }else if( NJets>=7 && NJets <=8 && MHT > 200 && MHT < 500 && BTags>=3 ){
 
-    //medium MHT
-      binMHT = 2 ; 
+    
+      binNum = 2 ; 
 
-    }else if( MHT > 750 ){
-     //high MHT
-      binMHT = 3 ; 
+    }else if( NJets>=7 && NJets <=8 && MHT > 500 && BTags>=2 ){
+      
+      binNum = 3 ; 
 
-    }else
- 
-       return -1;
+    }else if( NJets >=9 && MHT > 200 && MHT < 500 && BTags==2 ){
 
+      binNum = 4;
+      
+    }else if( NJets>=9  && MHT > 200 && MHT < 500 && BTags>=3 ){
+      
+      binNum = 5 ;
 
-    if( BTags >= 0 && BTags <= 1 ){
-      //low BJet
-      binBJet = 0 ;
+    }else if( NJets>=9 && MHT > 500 && BTags>=2 ){
+      
+      binNum = 6 ;
 
-      }else if( BTags >=2  ){
-      ////high BJet
-      binBJet = 1 ;
-
-      }else
-
+    }else{
+     
         return -1;
+    }
 
-    return binBJet*3+binMHT ;
-
-
+    return binNum;
+               
 
     }
     
@@ -261,11 +313,12 @@ int ReadTree::photonIndex(){//photon index
 
      return Endcap;
      }
+   
+   
 
-
-    bool ReadTree::PASStrigger(){
+    bool ReadTree::PASStriggerGJ(){
                bool Passtrigger=false;
-               for(int itr=0;itr<TriggerNames->size();itr++){
+               for(unsigned int itr=0;itr<TriggerNames->size();itr++){
              if(TriggerNames->at(itr)=="HLT_Photon90_CaloIdL_PFHT500_v3" && TriggerPass->at(itr)==1){
                 Passtrigger=true;
                }
@@ -275,11 +328,28 @@ int ReadTree::photonIndex(){//photon index
           }
 
 
-    bool ReadTree::PASS_PhotonCRForGJets(){
+    bool ReadTree::PASStriggerDYm(){
+               bool Passtrigger=false;
+               for(unsigned int itr=0;itr<TriggerNames->size();itr++){
+             if(TriggerNames->at(itr)=="HLT_Mu15_IsoVVVL_PFHT350_v2" && TriggerPass->at(itr)==1){
+                Passtrigger=true;
+               }
+              }
+
+       return Passtrigger;
+          }
+
+
+
+
+
+
+
+
+    bool ReadTree::PASS_PhotonCR_GJetsMC(){
        bool PassCR=false;
-       int binNumber_GJets = BinNumber();
        int index= photonIndex();
-       if(binNumber_GJets >-1 &&  index !=-1 && photon_nonPrompt->at(index) !=1){
+       if(  index > -1 && photon_nonPrompt->at(index) !=1 && PassIDISo()==true ){
              
           PassCR=true;
           }
@@ -288,11 +358,10 @@ int ReadTree::photonIndex(){//photon index
        }
 
 
-       bool ReadTree::PASS_PhotonCRForQCD(){
+       bool ReadTree::PASS_PhotonCR_QCDMC(){
        bool PassCR=false;
-       int binNumber_QCD = BinNumber();
        int index= photonIndex();
-       if(binNumber_QCD >-1 &&  index !=-1 && photon_nonPrompt->at(index) ==1){
+       if(  index > -1 && photon_nonPrompt->at(index) ==1 && PassIDISo()==true){
 
           PassCR=true;
           }
@@ -303,11 +372,10 @@ int ReadTree::photonIndex(){//photon index
 
 
 
-      bool ReadTree::PASS_PhotonCRForData(){
+      bool ReadTree::PASS_PhotonCR_GJetsData(){
        bool PassCR=false;
-       int binNumber_Data = BinNumber();
        int index= photonIndex();
-       if(binNumber_Data >-1 &&  index !=-1 && PASStrigger()==true){
+       if(  index >-1  && PASStriggerGJ()==true && PassIDISo()==true && NVtx >0 && eeBadScFilter==1 && eeBadSc4Filter==true && HBHENoiseFilter==true && HBHEIsoNoiseFilter==true){
 
           PassCR=true;
           }
@@ -316,6 +384,126 @@ int ReadTree::photonIndex(){//photon index
        }
 
 
+
+    bool ReadTree::PASS_DoubleMuCR_DYmMC(){
+    bool PassCR=false;
+   
+    int numZ=ZCandidates->size();
+    double Zmass= ZCandidates->at(0).M();
+
+    if( Zmass > 70. && Zmass < 110 && numZ ==1){
+
+      PassCR=true;
+
+
+        }
+
+     return PassCR;
+
+    }
+
+
+
+    bool ReadTree::PASS_DoubleMuCR_DYmData(){
+    bool PassCR=false;
+
+
+    int numZ=ZCandidates->size();
+    double Zmass= ZCandidates->at(0).M();
+
+    if( Zmass > 70. && Zmass < 110 && PASStriggerDYm()==true && numZ==1 && NVtx >0 && eeBadScFilter==1 && eeBadSc4Filter==true && HBHENoiseFilter==true && HBHEIsoNoiseFilter==true){
+
+      PassCR=true;
+
+
+        }
+
+     return PassCR;
+
+    }
+
+
+    bool ReadTree::PASS_DoubleMuCR_TTJetsMC(){
+    bool PassCR=false;
+
+    int numZ=ZCandidates->size();
+
+    double Zmass= ZCandidates->at(0).M();
+
+    if( Zmass > 70. && Zmass < 110 && numZ==1){
+
+      PassCR=true;
+
+
+        }
+
+     return PassCR;
+
+    }
+   
+
+    bool ReadTree::IchSR(){
+     bool Pass=false;
+     int index= photonIndex();
+    if(isBarrelPhoton()==true && index  > -1 && photon_pfChargedIsoRhoCorr->at(index) <2.67 ){
+       Pass=true;
+
+        }else if(isEndcapPhoton()==true && index  > -1 && photon_pfChargedIsoRhoCorr->at(index) <1.79){
+      Pass=true;
+
+        }else{
+
+      Pass=false;
+
+         }
+      
+      return Pass;
+    }
+
+
+    bool ReadTree::IchSB(){
+     bool Pass=false;
+     int index= photonIndex();
+    if(isBarrelPhoton()==true && index  > -1 && photon_pfChargedIsoRhoCorr->at(index) > 2.67 ){
+       Pass=true;
+
+        }else if(isEndcapPhoton()==true && index  > -1 && photon_pfChargedIsoRhoCorr->at(index) > 1.79){
+      Pass=true;
+
+        }else{
+
+      Pass=false;
+
+         }
+
+      return Pass;
+    }
+
+
+
+   bool ReadTree::Prompt(){
+     bool Pass=false;
+     int index= photonIndex();
+    if( index  > -1 && photon_nonPrompt->at(index) != true ){
+       Pass=true;
+
+         }
+
+      return Pass;
+    }
+
+
+
+    bool ReadTree::nonPrompt(){
+     bool Pass=false;
+     int index= photonIndex();
+    if( index  > -1 && photon_nonPrompt->at(index) == true ){
+       Pass=true;
+
+         }
+
+      return Pass;
+    }
 
 
 
