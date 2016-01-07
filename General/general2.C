@@ -193,10 +193,6 @@ void general2(unsigned int id, int nEvts = -1) {
 	if (!(ntper.isoElectronTracks==0)) continue;
 	if (!(ntper.isoPionTracks==0)) continue;
 
-	if (id==12){
-	  if (ntper.genHT>600.) continue;
-	}
-
     // Fill histograms
         hNJets->Fill(selNJet, weight);
         hHt->Fill(selHT, weight);
