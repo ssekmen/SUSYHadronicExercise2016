@@ -33,128 +33,34 @@ void FitDataEB(){
 
    //Scut= sigmaIetaIeta cut i.e. SigmaIetaIeta < 0.0107
 
+   TFile *file=new TFile("PhotonCR_Input.root","READ");
+
    double rangeMax=0.02;
    double rangeMin=0.005;
-   int nBins=40;
 
-   TH1F *hpromptSR_Scut=new TH1F("hpromptSR_Scut","hpromptSR_Scut",nBins,rangeMin,rangeMax);
+
+   TH1F *hpromptSR_Scut=(TH1F*)file->Get("hpromptSR_Scut");
    hpromptSR_Scut->SetLineWidth(1);
 
-   TH1F *hpromptPlusnonPromptSR_Scut=new TH1F("hpromptPlusnonPromptSR_Scut","hpromptPlusnonPromptSR_Scut",nBins,rangeMin,rangeMax);
+   TH1F *hpromptPlusnonPromptSR_Scut=(TH1F*)file->Get("hpromptPlusnonPromptSR_Scut");
    hpromptPlusnonPromptSR_Scut->SetLineWidth(1);
    
 
-   TH1F *hpromptSR=new TH1F("hpromptSR","hpromptSR",nBins,rangeMin,rangeMax);
+   TH1F *hpromptSR=(TH1F*)file->Get("hpromptSR");
    hpromptSR->SetLineWidth(1);
   
 
-   TH1F *hnonpromptSR=new TH1F("hnonpromptSR","hnonpromptSR",nBins,rangeMin,rangeMax);
+   TH1F *hnonpromptSR=(TH1F*)file->Get("hnonpromptSR");
    hnonpromptSR->SetLineWidth(1);
 
-   TH1F *hnonpromptSB=new TH1F("hnonpromptSB","hnonpromptSB",nBins,rangeMin,rangeMax);
+   TH1F *hnonpromptSB=(TH1F*)file->Get("hnonpromptSB");
    hnonpromptSB->SetLineWidth(1);
 
-   TH1F *hDataSR=new TH1F("hDataSR","hDataSR",nBins,rangeMin,rangeMax);
+   TH1F *hDataSR=(TH1F*)file->Get("hDataSR");
    hDataSR->SetLineWidth(1);
    
 
 
-
-   TChain* tGJets = new TChain("SimpleTree");
-   tGJets->Add("/eos/uscms/store/user/bmahakud/CMSDASLPC2016/GJetsMC.root");
-   ReadTree GJets(tGJets);
-
-
-   TChain* tQCD = new TChain("SimpleTree");
-   tQCD->Add("/eos/uscms/store/user/bmahakud/CMSDASLPC2016/QCDMC.root");
-   ReadTree QCD(tQCD);
-
-
-   TChain* tData = new TChain("SimpleTree");
-   tData->Add("/eos/uscms/store/user/bmahakud/CMSDASLPC2016/SinglePhoton2p1ifb.root");//Single Photon Data
-   ReadTree Data(tData);
-   
-   
-    for(int iEv=0;iEv<tGJets->GetEntries();iEv++){//GJets event loop
-    tGJets->GetEntry(iEv);
-    if(iEv % 100000==0){cout<<"Event no GJets : "<<iEv<<endl;}
-
-    if(GJets.isBarrel==1 && GJets.nonPrompt !=1 && GJets.BaseLine()==true &&  GJets.IchSR==1 && GJets.BJets==0 ){//prompt 
- 
-   
-          hpromptSR->Fill(GJets.SigmaIetaIeta,GJets.evWeight);
-         // if(GJets.SigmaIetaIeta < 0.02){
-          //       }
-
-          if(GJets.SigmaIetaIeta < 0.0107){
-          hpromptSR_Scut->Fill(GJets.SigmaIetaIeta,GJets.evWeight);
-          hpromptPlusnonPromptSR_Scut->Fill(GJets.SigmaIetaIeta,GJets.evWeight);
-                 }
-
-   }//prompt
-
-
-   }//GJets event loop
-
-  
-    for(int iEv=0;iEv<tQCD->GetEntries();iEv++){//QCD event loop
-    tQCD->GetEntry(iEv);
-    if(iEv % 100000==0){cout<<"Event no QCD : "<<iEv<<endl;}
-
-    if(QCD.nonPrompt ==1 && QCD.BaseLine()==true  && QCD.isBarrel==1 && QCD.BJets==0){//non prompt 
-   
-    if(QCD.IchSR==1 &&  QCD.SigmaIetaIeta < 0.02 ){//2
-    hnonpromptSR->Fill(QCD.SigmaIetaIeta,QCD.evWeight);
-    
-    
-      if(QCD.SigmaIetaIeta < 0.0107){//1
-      
-        hpromptPlusnonPromptSR_Scut->Fill(QCD.SigmaIetaIeta,QCD.evWeight);
-
-       }//1
-      }//2
-   
-    if(QCD.IchSB==1 && QCD.SigmaIetaIeta < 0.02){//3
-    hnonpromptSB->Fill(QCD.SigmaIetaIeta,QCD.evWeight);
-   
-       }//3
-
-   }//non prompt
-
-   }//QCD event loop
-
-
-
-   
-
-   
-    for(int iEv=0;iEv<tData->GetEntries();iEv++){//Data
-    tData->GetEntry(iEv);
-    if(iEv % 1000000==0){cout<<"Event no Data : "<<iEv<<endl;}
-
-      bool PassTrigger=false;
-          
-         for(int itr=0;itr<Data.TriggerNames->size();itr++){
-             
-             if(Data.TriggerNames->at(itr)=="HLT_Photon90_CaloIdL_PFHT500_v3" && Data.TriggerPass->at(itr)==1){
-                PassTrigger=true;
-                     }
-                 }
-
-           ///You can set Data.NJets >=7 and see how purity changes
-
-          if( PassTrigger==true && Data.isBarrel==1 && Data.BaseLine()==true  && Data.IchSR==1 && Data.BJets==0){//photon SR
-
-
-           if(Data.SigmaIetaIeta < 0.02){
-             hDataSR->Fill(Data.SigmaIetaIeta);  
-                  }
-
-
-
-        }//Photon SR
-
-       }//Data
 
 
     
@@ -190,7 +96,7 @@ void FitDataEB(){
     tpav_txt->AddText(mcPurity);
 
     
-    RooPlot* frame4 = SIeta.frame(Title("CMS #it{Preliminary}                        2.1 fb^{-1}, 13 TeV"));
+    RooPlot* frame4 = SIeta.frame(Title("CMS #it{Preliminary}                        2.3 fb^{-1}, 13 TeV"));
 
     dataSR.plotOn(frame4,Name("dataSR1"));  
     PDF.fitTo(dataSR);
