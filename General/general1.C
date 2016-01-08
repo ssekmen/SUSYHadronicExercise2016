@@ -146,10 +146,34 @@ void general1(unsigned int id, int nEvts = -1) {
 
 	//>>> PLACE DELTA PHI COMPUTATION HERE
 
+	//KH-------------
+        // Delta phi between the MHT vector and the jet for the leading MHT jets
+	std::vector<double> deltaPhis(4,9999.);
+
+        // Loop over reco jets: remember, they are ordered in pt!        
+	unsigned int nMhtJets = 0;
+        for(unsigned int jetIdx = 0; jetIdx < ntper.jetsLVec->size(); ++jetIdx) {
+
+          // Select MHT jets
+          if( ntper.jetsLVec->at(jetIdx).Pt() > 30 && std::abs(ntper.jetsLVec->at(jetIdx).Eta() ) < 2.4 ) {
+
+            // Compute delta phi (per convention in sector between -Pi and Pi)
+            // between this jet and the MHT vector
+            const double deltaPhi = TVector2::Phi_mpi_pi(ntper.jetsLVec->at(jetIdx).Phi() - phiMHT );
+            // Store deltaPhi
+            deltaPhis.at(nMhtJets) = std::fabs(deltaPhi);
+
+            // Increase counter for MHT jets
+            ++nMhtJets;
+            // DeltaPhi cut only for first three jets
+            // Leave jet loop if the first 3 MHT jets tested
+            if( nMhtJets == 4 ) break;
+          }   // End of MHT-jet criterion
+        } // End of loop over reco jets
+	//KH-------------
 
 	// Actually, the deltaPhi(MHT,jet{1,2,3,4}) variables are already stored in ntuples, 
 	// so we can cross-check your deltaPhi computations
-	/*
         vector<double> dphiVec; 
 	dphiVec.insert(dphiVec.end(), 
 		       {ntper.DeltaPhi1,ntper.DeltaPhi2,ntper.DeltaPhi3,ntper.DeltaPhi4});
@@ -164,7 +188,6 @@ void general1(unsigned int id, int nEvts = -1) {
 	  printf("dphiVec (from ntuples): %12.8e, %18.14e, %18.14e, %18.14e\n",
 		 dphiVec[0],dphiVec[1],dphiVec[2],dphiVec[3]);
 	}
-	*/
 
 	// Fill histograms
         hNJets->Fill(selNJet, weight);
