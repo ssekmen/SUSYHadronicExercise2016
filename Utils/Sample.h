@@ -24,10 +24,6 @@ public:
   // Ntuple file name
   static std::vector<TString> fileNameFullSample(unsigned int id, std::vector<double> &xSecVec, std::vector<int> &nEvtVec);
 
-  // Ntuple file name of a small subset of the full sample
-  // for quick tests
-  static TString fileNameSubSample(unsigned int id);
-
   // Full-blown sample name including TLatex commands for
   // plot legends etc.
   static TString label(unsigned int id);
@@ -45,7 +41,7 @@ private:
 //  static vector<double> xSecVec;
 };
 
-TString Sample::path_ = "root://cmseos:1094//eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/";
+TString Sample::path_ = "root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/";
 
 std::vector<TString> Sample::fileNameFullSample(unsigned int id, std::vector<double> &xSecVec, std::vector<int> &nEvtVec) {
   xSecVec.clear(); nEvtVec.clear();
@@ -54,65 +50,48 @@ std::vector<TString> Sample::fileNameFullSample(unsigned int id, std::vector<dou
   std::vector<TString> nameVec;
   TString name("");
   if(      id ==  1  ){
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_HTMHT_re2015C.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_HTMHT_re2015D.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_HTMHT_2015Db.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_HTMHT_re2015C.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_HTMHT_re2015D.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_HTMHT_2015Db.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   }
   //else if( id ==  2  ) name += "MuHad.root";
 
   if( id == 11  ){
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-100to200.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-200to400.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-400to600.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-600to800.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-800to1200.root";  nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-1200to2500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_WJetsToLNu_HT-2500toInf.root";  nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_WJetsToLNu_HT-100to200.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_WJetsToLNu_HT-200to400.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_WJetsToLNu_HT-400to600.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_WJetsToLNu_HT-600to800.root";   nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_WJetsToLNu_HT-800to1200.root";  nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_WJetsToLNu_HT-1200to2500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_WJetsToLNu_HT-2500toInf.root";  nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 12  ){
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_TTJets_SingleLeptFromT.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_TTJets_SingleLeptFromTbar.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    //name = path_+"Skims/CMSDAS2016/tree_signal/tree_TTJets.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    //name = path_+"Skims/CMSDAS2016/tree_signal/tree_TTJets_HT-600to800.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    //name = path_+"Skims/CMSDAS2016/tree_signal/tree_TTJets_HT-800to1200.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    //name = path_+"Skims/CMSDAS2016/tree_signal/tree_TTJets_HT-1200to2500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    //name = path_+"Skims/CMSDAS2016/tree_signal/tree_TTJets_HT-2500toInf.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_TTJets_SingleLeptFromT.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_TTJets_SingleLeptFromTbar.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //name = path_+"tree_signal/tree_TTJets.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //name = path_+"tree_signal/tree_TTJets_HT-600to800.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //name = path_+"tree_signal/tree_TTJets_HT-800to1200.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //name = path_+"tree_signal/tree_TTJets_HT-1200to2500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //name = path_+"tree_signal/tree_TTJets_HT-2500toInf.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 13 ){
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_ZJetsToNuNu_HT-100to200.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_ZJetsToNuNu_HT-200to400.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_ZJetsToNuNu_HT-400to600.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_ZJetsToNuNu_HT-600toInf.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_ZJetsToNuNu_HT-100to200.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_ZJetsToNuNu_HT-200to400.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_ZJetsToNuNu_HT-400to600.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_ZJetsToNuNu_HT-600toInf.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 14 ){
-    //name = path_+"Skims/CMSDAS2016/tree_signal/tree_QCD_HT-200to300.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_QCD_HT-300to500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_QCD_HT-500to700.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_QCD_HT-700to1000.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_QCD_HT-1000to1500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_QCD_HT-1500to2000.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_QCD_HT-2000toInf.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    //name = path_+"tree_signal/tree_QCD_HT-200to300.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_QCD_HT-300to500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_QCD_HT-500to700.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_QCD_HT-700to1000.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_QCD_HT-1000to1500.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_QCD_HT-1500to2000.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_QCD_HT-2000toInf.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 21  ){
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_T1tttt_1500_100.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_T1tttt_1500_100.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   } else if( id == 22  ){
-    name = path_+"Skims/CMSDAS2016/tree_signal/tree_T1tttt_1200_800.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
+    name = path_+"tree_signal/tree_T1tttt_1200_800.root"; nameVec.push_back(name); xSecVec.push_back(1.); nEvtVec.push_back(1.);
   }
 
   return nameVec;
-}
-
-
-TString Sample::fileNameSubSample(unsigned int id) {
-  checkId(id);
-
-  TString name("");
-  if(      id ==  1  ) name += "HTMHT-Run2012.root";
-  else if( id ==  2  ) name += "MuHad.root";
-  else if( id == 11  ) name += "Summer12-WJetsHT400toInf_1.root";
-  else if( id == 12  ) name += "Summer12-TTJets-SemiLep_1.root";
-  else if( id == 13  ) name += "Summer12-ZJetsHT400toInf.root";
-  else if( id == 14  ) name += "Summer12-QCDHT250toInf.root";
-  else if( id == 21  ) name += "Summer12-SUSY_LM6.root";
-  else if( id == 22  ) name += "Summer12-SUSY_LM9.root";
-
-  return path_+name;
 }
 
 
