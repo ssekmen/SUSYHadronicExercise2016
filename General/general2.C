@@ -22,6 +22,10 @@
 //         matthias.schroeder@AT@desy.de
 //         November 2013
 
+// Revision: Kenichi Hatakeyama
+//           Kenichi_Hatakeyama@baylor.edu
+//           January 2016
+
 // === Main Function ===================================================
 void general2(unsigned int id, int nEvts = -1) {
   std::cout << "Analysing the '" << Sample::toTString(id) << "' sample" << std::endl;
@@ -130,52 +134,18 @@ void general2(unsigned int id, int nEvts = -1) {
         if( selMuons != 0 ) continue;
         if( selElectrons !=0 ) continue;
 
-	// Calculate the jet-based RA2 selection variables
-        int selNJet = 0; // Number of jets with pt > 50 GeV and |eta| < 2.5 (`HT jets')
-        double selHT = 0; // HT, computed from jets with pt > 50 GeV and |eta| < 2.5 (`HT jets')
-        double selMHT = 0; // cmponents of MHT,  computed from jets with pt > 30 GeV (`MHT jets')
-        double selMHTx = 0, selMHTy = 0; // x-y cmponents of MHT,  computed from jets with pt > 30 GeV (`MHT jets')
-
-        selNJet = ntper.countJets();
-        selHT = ntper.calcHT();
-        selMHT = ntper.calcMHT();
-
-	if (selNJet!=ntper.NJets||selHT!=ntper.HT||selMHT!=ntper.MHT){
-	printf("Njet,HT,MHT on the fly:   %6d, %8.3f, %8.3f\n",
-	       selNJet,selHT,selMHT);
-	printf("Njet,HT,MHT from ntuples: %6d, %8.3f, %8.3f\n",
-	       ntper.NJets,ntper.HT,ntper.MHT);	
-	}
-
-        vector<double> compMHTvec = ntper.calcMHTxy();
-        selMHTx = compMHTvec[0]; selMHTy = compMHTvec[1];
-        double phiMHT = std::atan2(selMHTy, selMHTx);
-        vector<double> dphiVec = ntper.calcDPhi( (*ntper.jetsLVec), phiMHT, 4, dphiArr);
-
-        vector<double> dphiVec_fromNtuple; 
-	dphiVec_fromNtuple.insert(dphiVec_fromNtuple.end(), 
-				  {ntper.DeltaPhi1,ntper.DeltaPhi2,ntper.DeltaPhi3,ntper.DeltaPhi4});
-
-	if (!std::equal ( dphiVec_fromNtuple.begin(), dphiVec_fromNtuple.end(), dphiVec.begin() )){
-	  printf("jetpt:              %8.4f, %8.4f, %8.4f, %8.4f\n",
-		 ntper.jetsLVec->at(0).Pt(),
-		 ntper.jetsLVec->at(1).Pt(),
-		 ntper.jetsLVec->at(2).Pt(),
-		 ntper.jetsLVec->at(3).Pt());
-	  printf("jeteta:             %8.4f, %8.4f, %8.4f, %8.4f\n",
-		 ntper.jetsLVec->at(0).Eta(),
-		 ntper.jetsLVec->at(1).Eta(),
-		 ntper.jetsLVec->at(2).Eta(),
-		 ntper.jetsLVec->at(3).Eta());
-	  printf("dphiVec:            %8.4f, %8.4f, %8.4f, %8.4f\n",dphiVec[0],dphiVec[1],dphiVec[2],dphiVec[3]);
-	  printf("dphiVec_fromNtuple: %8.4f, %8.4f, %8.4f, %8.4f\n",
-		 dphiVec_fromNtuple[0],dphiVec_fromNtuple[1],dphiVec_fromNtuple[2],dphiVec_fromNtuple[3]);
-	}
+	// Obtain the jet-based RA2 selection variables
+        int selNJet = ntper.NJets; // Number of jets with pt > 30 GeV and |eta| < 2.4 (`HT jets')
+        double selHT = ntper.HT;   // HT, computed from jets with pt > 30 GeV and |eta| < 2.4 (`HT jets')
+        double selMHT = ntper.MHT; // cmponents of MHT,  computed from jets with pt > 30 GeV (`MHT jets')
+        vector<double> dphiVec; 
+	dphiVec.insert(dphiVec.end(), 
+		       {ntper.DeltaPhi1,ntper.DeltaPhi2,ntper.DeltaPhi3,ntper.DeltaPhi4});
 
         double weight = 1.0;
-	if (id!=1){
-        weight *= ntper.evtWeight;
-        weight *= scaleToLumi;
+	if (id!=1){  // no scaling for data
+	  weight *= ntper.evtWeight;
+	  //weight *= scaleToLumi;
 	}
 
     // Apply the NJets baseline-cut
@@ -207,13 +177,11 @@ void general2(unsigned int id, int nEvts = -1) {
         for(unsigned int ih=0; ih < hDeltaPhi.size(); ++ih) hDeltaPhi[ih]->Fill(dphiVec[ih], weight);
 
         hYields->Fill(0.,weight);	// This is after the baseline selection
-        //hYields->Fill(0.,1.);	// This is after the baseline selection
 
     // Apply the search-bin selection (tighter than baseline)
        const unsigned int searchBin = Selection::searchBin(selHT,selMHT,selNJet,ntper.BTags);
        if( searchBin > 0 ) {
 	 hYields->Fill(searchBin,weight);
-	 //hYields->Fill(searchBin,1.);
        }
      }
      if( chn ) delete chn;

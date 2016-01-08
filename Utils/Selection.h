@@ -40,9 +40,6 @@ public:
 unsigned int Selection::searchBin(double ht, double mht, unsigned int nJets, int nBtags) {
   unsigned int bin = 0;
 
-  //
-  //if (nBtags>=2){
-
   if( nJets >= 7 && nJets <=8 ) {
     
     if( ht > 500 ) {
@@ -50,7 +47,6 @@ unsigned int Selection::searchBin(double ht, double mht, unsigned int nJets, int
       if(      mht > 200 && mht < 500 && nBtags==2 ) bin = 1;
       else if( mht > 200 && mht < 500 && nBtags>=3 ) bin = 2;
       else if( mht > 500 && mht < 750 && nBtags>=2)  bin = 3;
-      //else if( mht > 750              ) bin = 3;
 
     }
 
@@ -66,8 +62,6 @@ unsigned int Selection::searchBin(double ht, double mht, unsigned int nJets, int
     }
 
   }
-  //}
-  //
 
   return bin;
 }
