@@ -1,5 +1,13 @@
 #include<iostream>
+#include "TH1F.h"
 #include "TStyle.h"
+#include "TPad.h"
+#include "TVirtualPad.h"
+#include "TLegend.h"
+#include "TCanvas.h"
+#include "TPaveText.h"
+#include "THStack.h"
+#include "TGaxis.h"
 //This is a class which can be used to stacked MC distributions along with data for Photon Control region. You need to pass the Three histogram pointers and couple of strings 
 
 
@@ -27,7 +35,7 @@ class DataMC{
     }
 
 
-    void DataMC::drawLegend(TH1F *h_1=0,TH1F *h_2=0,TH1F *h_3=0,std::string H1R="",std::string H2R="",std::string H3R=""){
+    void DataMC::drawLegend(TH1F *h_1,TH1F *h_2,TH1F *h_3,std::string H1R,std::string H2R,std::string H3R){
 
     char h1L[100];
     char h2L[100];
@@ -78,8 +86,7 @@ class DataMC{
 
 
 
-
-    void DataMC::Stack(TH1F *h1,TH1F *h2,TH1F *hnp,TCanvas *c,std::string Region="",std::string h1R="",std::string h2R="",std::string variable=""){
+    void DataMC::Stack(TH1F *h1,TH1F *h2,TH1F *hnp,TCanvas *c,std::string Region,std::string h1R,std::string h2R,std::string variable){
 
 
 
@@ -118,7 +125,7 @@ class DataMC{
 
     double scaleFactor=h1->Integral()/(h2->Integral()+hnp->Integral());
     
-    cout<<"Data/MC: "<<h1->Integral()/(h2->Integral()+hnp->Integral())<<endl;  
+    cout<<variable<<" Data/MC: "<<h1->Integral()/(h2->Integral()+hnp->Integral())<<endl;  
 
     TH1F *hAllData=(TH1F*)h1->Clone("hAllData");
     TH1F *hAllMC=(TH1F*)h2->Clone("hAllMC");
@@ -157,15 +164,30 @@ class DataMC{
     tpav_txt->SetTextAlign(11);
     tpav_txt->SetTextFont(42);
     tpav_txt->SetTextSize(0.04);
+
+    if(Region =="EE" || Region =="EB"){
     tpav_txt->AddText("H_{T} >800");
     tpav_txt->AddText("#gamma p_{T} > 100 ");
     tpav_txt->AddText("N_{jets} >=7");
     tpav_txt->AddText("H_{T}^{miss}>200");
-    // tpav_txt->AddText("N_{b-jets}=0");
+    tpav_txt->AddText("N_{b-jets}>=2");
     tpav_txt->AddText("#Delta #Phi_{1,2,3,4}>(0.5,0.5,0.3,0.3)");
     tpav_txt->AddText(region);
     tpav_txt->AddText(dataMCSF);
-    
+       }else{
+
+    tpav_txt->AddText("H_{T} >500");
+    tpav_txt->AddText("#gamma p_{T} > 100 ");
+    tpav_txt->AddText("N_{jets} >=4");
+    tpav_txt->AddText("H_{T}^{miss}>200");
+    tpav_txt->AddText("#Delta #Phi_{1,2,3,4}>(0.5,0.5,0.3,0.3)");
+    tpav_txt->AddText(region);
+    tpav_txt->AddText(dataMCSF);       
+
+  
+
+
+         }
 
     
 
@@ -192,8 +214,6 @@ class DataMC{
 
     hs->Add(hnp);
     hs->Add(hP);
-    //cout<<"Prompt: "<<hP->Integral()<<endl;
-    //cout<<"non Prompt: "<<hnp->Integral()<<endl;
    
    
     TPaveText *pCMS = new TPaveText(0.132107,0.9308003,0.8327759,0.9923583,"brNDC");
@@ -203,7 +223,7 @@ class DataMC{
     pCMS->SetTextAlign(11);
     pCMS->SetTextFont(42);
     pCMS->SetTextSize(0.04);
-    pCMS->AddText("CMS #it{Preliminary}                   2.1 fb^{-1}, #sqrt{s}= 13 TeV");    
+    pCMS->AddText("CMS #it{Preliminary}                   2.3 fb^{-1}, #sqrt{s}= 13 TeV");    
 
 
     hs->SetMinimum(0.1);
@@ -300,10 +320,6 @@ class DataMC{
     char pName[100];
 
     sprintf(pName,"%s.png",plotname);
-    c->SaveAs(pName);
-    sprintf(pName,"%s.gif",plotname);
-    c->SaveAs(pName);
-    sprintf(pName,"%s.pdf",plotname);
     c->SaveAs(pName);
 
 

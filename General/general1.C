@@ -22,6 +22,10 @@
 //         matthias.schroeder@AT@desy.de
 //         November 2013
 
+// Revision: Kenichi Hatakeyama
+//           Kenichi_Hatakeyama@baylor.edu
+//           January 2016
+
 // === Main Function ===================================================
 void general1(unsigned int id, int nEvts = -1) {
   std::cout << "Analysing the '" << Sample::toTString(id) << "' sample" << std::endl;
@@ -90,8 +94,7 @@ void general1(unsigned int id, int nEvts = -1) {
 
   for(unsigned int is=0; is<samples.size(); is++){
      
-     //TChain * chn = new TChain("tree");
-     TChain * chn = new TChain("TreeMaker2/PreSelection");
+     TChain * chn = new TChain("tree");
      chn->Add(samples[is]);
 
      NTupleReader ntper(chn);
@@ -114,59 +117,51 @@ void general1(unsigned int id, int nEvts = -1) {
 
         int selMuons = 0;	
         for(unsigned int im=0; im<ntper.muonsLVec->size(); ++im){
-	  //KH if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsRelIso->at(im)<0.2 ) ++selMuons;
 	  if( ntper.muonsLVec->at(im).Pt() > 10 && std::abs(ntper.muonsLVec->at(im).Eta())<2.4 && ntper.muonsMiniIso->at(im)<0.2) ++selMuons;
         }
 
         int selElectrons = 0;
         for(unsigned int ie=0; ie<ntper.elesLVec->size(); ie++){
-//          bool isEB = std::abs(elesLVec->at(ie).Eta()) < 1.479 ? true : false;
-//           unsigned int idx = isEB ? 0 : 1;
 	  if( ntper.elesLVec->at(ie).Pt() > 10 && std::abs(ntper.elesLVec->at(ie).Eta())<2.4 && ntper.elesMiniIso->at(ie)<0.1) ++selElectrons;
         }
         if( selMuons != 0 ) continue;
         if( selElectrons !=0 ) continue;
 
-	// Calculate the jet-based RA2 selection variables
-        int selNJet = 0; // Number of jets with pt > 50 GeV and |eta| < 2.5 (`HT jets')
-        double selHT = 0; // HT, computed from jets with pt > 50 GeV and |eta| < 2.5 (`HT jets')
-        double selMHT = 0; // cmponents of MHT,  computed from jets with pt > 30 GeV (`MHT jets')
-        double selMHTx = 0, selMHTy = 0; // x-y cmponents of MHT,  computed from jets with pt > 30 GeV (`MHT jets')
-
-        selNJet = ntper.countJets();
-        selHT = ntper.calcHT();
-
-        vector<double> compMHTvec = ntper.calcMHTxy();
-        selMHTx = compMHTvec[0]; selMHTy = compMHTvec[1];
-        
-        selMHT = sqrt(selMHTx*selMHTx + selMHTy*selMHTy);
-        double phiMHT = std::atan2(selMHTy, selMHTx);
+	// Obtain the jet-based RA2 selection variables
+        int selNJet = ntper.NJets; // Number of jets with pt > 30 GeV and |eta| < 2.4 (`HT jets')
+        double selHT = ntper.HT;   // HT, computed from jets with pt > 30 GeV and |eta| < 2.4 (`HT jets')
+        double selMHT = ntper.MHT; // MHT,  computed from jets with pt > 30 GeV (`MHT jets')
 
         double weight = 1.0;
-        weight *= ntper.evtWeight;
-        weight *= scaleToLumi;
+	if (id!=1){  // no scaling for data
+	  weight *= ntper.evtWeight;
+	  //weight *= scaleToLumi;
+	}
+	
+	// Calculate the MHTx, MHTy
+        double selMHTx = 0, selMHTy = 0; // x-y cmponents of MHT,  computed from jets with pt > 30 GeV (`MHT jets')
+        vector<double> compMHTvec = ntper.calcMHTxy();
+        selMHTx = compMHTvec[0]; selMHTy = compMHTvec[1];        
+        double phiMHT = std::atan2(selMHTy, selMHTx);
 
-	// Skipping one problematic QCD event in the low HT sample (MHT ~ 715.595 GeV)
-        if( id == 14 && is ==0 && ntper.run == 1 && ntper.lumi == 119397 && ntper.event == 11933645 ) continue;
 	//>>> PLACE DELTA PHI COMPUTATION HERE
 
 	//KH-------------
         // Delta phi between the MHT vector and the jet for the leading MHT jets
 	std::vector<double> deltaPhis(4,9999.);
-        const float phiMht = std::atan2(selMHTy,selMHTx);
 
         // Loop over reco jets: remember, they are ordered in pt!        
 	unsigned int nMhtJets = 0;
         for(unsigned int jetIdx = 0; jetIdx < ntper.jetsLVec->size(); ++jetIdx) {
 
           // Select MHT jets
-          if( ntper.jetsLVec->at(jetIdx).Pt() > 30 && std::abs(ntper.jetsLVec->at(jetIdx).Eta() ) < 5.0 ) {
+          if( ntper.jetsLVec->at(jetIdx).Pt() > 30 && std::abs(ntper.jetsLVec->at(jetIdx).Eta() ) < 2.4 ) {
 
             // Compute delta phi (per convention in sector between -Pi and Pi)
             // between this jet and the MHT vector
-            const float deltaPhi = TVector2::Phi_mpi_pi(ntper.jetsLVec->at(jetIdx).Phi() - phiMht );
+            const double deltaPhi = TVector2::Phi_mpi_pi(ntper.jetsLVec->at(jetIdx).Phi() - phiMHT );
             // Store deltaPhi
-            deltaPhis.at(nMhtJets) = std::abs(deltaPhi);
+            deltaPhis.at(nMhtJets) = std::fabs(deltaPhi);
 
             // Increase counter for MHT jets
             ++nMhtJets;
@@ -176,6 +171,23 @@ void general1(unsigned int id, int nEvts = -1) {
           }   // End of MHT-jet criterion
         } // End of loop over reco jets
 	//KH-------------
+
+	// Actually, the deltaPhi(MHT,jet{1,2,3,4}) variables are already stored in ntuples, 
+	// so we can cross-check your deltaPhi computations
+        vector<double> dphiVec; 
+	dphiVec.insert(dphiVec.end(), 
+		       {ntper.DeltaPhi1,ntper.DeltaPhi2,ntper.DeltaPhi3,ntper.DeltaPhi4});
+	std::cout << dphiVec.size() << " " << deltaPhis.size() << std::endl;
+	
+	if (std::equal ( dphiVec.begin(), dphiVec.end(), deltaPhis.begin() )){
+	  printf("jetpt:                  %8.4f, %8.4f, %8.4f, %8.4f\n",
+		 ntper.jetsLVec->at(0).Pt(), ntper.jetsLVec->at(1).Pt(), ntper.jetsLVec->at(2).Pt(), ntper.jetsLVec->at(3).Pt());
+	  printf("jeteta:                 %8.4f, %8.4f, %8.4f, %8.4f\n",
+		 ntper.jetsLVec->at(0).Eta(),ntper.jetsLVec->at(1).Eta(),ntper.jetsLVec->at(2).Eta(),ntper.jetsLVec->at(3).Eta());
+	  printf("deltaPhis (computed):   %12.8e, %18.14e, %18.14e, %18.14e\n",deltaPhis[0],deltaPhis[1],deltaPhis[2],deltaPhis[3]);
+	  printf("dphiVec (from ntuples): %12.8e, %18.14e, %18.14e, %18.14e\n",
+		 dphiVec[0],dphiVec[1],dphiVec[2],dphiVec[3]);
+	}
 
 	// Fill histograms
         hNJets->Fill(selNJet, weight);
@@ -190,6 +202,7 @@ void general1(unsigned int id, int nEvts = -1) {
 	if (deltaPhis.size()>0) hDeltaPhi.at(0)->Fill(deltaPhis.at(0),weight);
 	if (deltaPhis.size()>1) hDeltaPhi.at(1)->Fill(deltaPhis.at(1),weight);
 	if (deltaPhis.size()>2) hDeltaPhi.at(2)->Fill(deltaPhis.at(2),weight);
+	if (deltaPhis.size()>3) hDeltaPhi.at(3)->Fill(deltaPhis.at(3),weight);
      }
 
      if(chn) delete chn;
