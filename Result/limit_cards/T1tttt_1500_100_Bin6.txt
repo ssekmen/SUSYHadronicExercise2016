@@ -1,0 +1,26 @@
+#the tag = Bin6
+imax 1 #number of channels
+jmax 4 #number of backgrounds
+kmax * nuissance
+------------
+bin Bin6
+observation 0
+bin Bin6 Bin6 Bin6 Bin6 Bin6 
+process sig lostl hadt zvv qcd
+process 0 1 2 3 4
+rate 1.3388 0.12822 0.00843 0 0.001
+------------------------------------
+lumi                  lnN  1.04 - - - - lumi affects signal
+signal_stat           lnN   1.015 - - - -
+signal_systematic     lnN  1.1 - - - - approximate 10 percent for ISR,JEC,pileup
+lost_stat             lnN  - 0.01/9.16954 - - -
+lost_sys              lnN  - 1/1.39456 - - -
+hadtau_stat           lnN  - - 0.196471/134.739 - -
+hadtau_sys            lnN  - - 1/1.23412 - -
+zinv_statbin6         gmN  0 - - - 0.132135 - 
+zinv_sys_purity       lnN  - - - 1.08 -
+zinv_sys_ZgR          lnN  - - - 1.50 -
+zinv_sys_doubleratio  lnN  - - - 1.30 -
+qcd_stat              lnN  - - - - - 1.0/2.0
+qcd_sys               lnN  - - - - - 1.0/2.0
+----------------------------------------------
