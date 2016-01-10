@@ -1,5 +1,9 @@
 // Step 1: create a new tree from MC with variables useful for calculating efficiencies (Step 2) and running the closure test (Step 3)
 
+#ifdef __CINT__
+#pragma link C++ class std::vector<TLorentzVector>+;
+#endif
+
 #include "ExpectationMaker.C"
 
 void RunStep1() {

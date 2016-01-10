@@ -1,5 +1,9 @@
 // Step 3: calculate the weights needed to extrapolate from control sample to search region using the efficiencies measured in Step 2
 
+#ifdef __CINT__
+#pragma link C++ class std::vector<TLorentzVector>+;
+#endif
+
 #include "PredictionMaker.C"
 
 void RunStep3() {

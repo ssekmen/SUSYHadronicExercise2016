@@ -156,7 +156,7 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
 
     JetsNum_ = Jets->size();
 
-    if(useTrigger) if(!TriggerPass->at(34) && !TriggerPass->at(35) && !TriggerPass->at(36)) return kTRUE;
+    if(useTrigger) if(!TriggerPass->at(34) && !TriggerPass->at(35) && !TriggerPass->at(36)) continue;
     if(useTriggerEffWeight) Weight *= GetTriggerEffWeight(MHT);
 
     // if(doPUreweighting){
