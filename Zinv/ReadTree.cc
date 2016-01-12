@@ -38,7 +38,7 @@ class ReadTree {
     vector<TLorentzVector> *photonCands;
     vector<TLorentzVector> *bestPhoton;
     vector<string>  *TriggerNames;
-    vector<bool>    *TriggerPass;
+    vector<int>    *TriggerPass;
     vector<int>     *TriggerPrescales;
     vector<TLorentzVector> *ZCandidates;
 
