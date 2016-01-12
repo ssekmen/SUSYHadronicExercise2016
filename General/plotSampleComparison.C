@@ -48,6 +48,8 @@ void plotSampleComparison(const TString &graphicsFormat = "png") {
   TH1* hJetEta[kNJetHists][kNSamples];
   TH1* hDeltaPhi[kNJetHists][kNSamples];
 
+  double max=0.1;
+
   for(int s = 0; s < kNSamples; ++s) { // Loop over samples
     // Get histograms from file
     const TString fileName = "General_"+Sample::toTString(ids[s])+".root";
@@ -84,8 +86,6 @@ void plotSampleComparison(const TString &graphicsFormat = "png") {
       setStyle(hDeltaPhi[i][s],ids[s]);
     }
   } // End of loop over samples
-
-
   
   // Draw
   TString drawOptions[kNSamples];
@@ -115,7 +115,7 @@ void plotSampleComparison(const TString &graphicsFormat = "png") {
 
   TCanvas* canHt = new TCanvas("canHt","Ht",canSize,canSize);
   canHt->cd();
-  hHt[0]->GetYaxis()->SetRangeUser(3E-9,9E-2);
+  hHt[0]->GetYaxis()->SetRangeUser(3E-9,9E-1);
   hHt[0]->Draw(drawOptions[0]);
   for(int s = 1; s < kNSamples; ++s) {
     hHt[s]->Draw(drawOptions[s]+"same");
@@ -126,7 +126,7 @@ void plotSampleComparison(const TString &graphicsFormat = "png") {
 
   TCanvas* canMht = new TCanvas("canMht","Mht",canSize,canSize);
   canMht->cd();
-  hMht[0]->GetYaxis()->SetRangeUser(3E-9,9E-2);
+  hMht[0]->GetYaxis()->SetRangeUser(3E-9,9E-1);
   hMht[0]->Draw(drawOptions[0]);
   for(int s = 1; s < kNSamples; ++s) {
     hMht[s]->Draw(drawOptions[s]+"same");
@@ -140,7 +140,12 @@ void plotSampleComparison(const TString &graphicsFormat = "png") {
     name += i+1;
     TCanvas* can = new TCanvas(name,name,canSize,canSize);
     can->cd();
-    hJetEta[i][0]->GetYaxis()->SetRangeUser(0,0.5);
+    max=0.1;
+    for(int s = 0; s < kNSamples; ++s) {
+      if (hJetEta[i][s]->GetMaximum()>max) max = hJetEta[i][s]->GetMaximum();
+    }
+    hJetEta[i][0]->SetMaximum(max*1.5);
+    //hJetEta[i][0]->GetYaxis()->SetRangeUser(0,0.8);
     hJetEta[i][0]->Draw(drawOptions[0]);
     for(int s = 1; s < kNSamples; ++s) {
       hJetEta[i][s]->Draw(drawOptions[s]+"same");
@@ -154,7 +159,12 @@ void plotSampleComparison(const TString &graphicsFormat = "png") {
     name += i+1;
     TCanvas* can = new TCanvas(name,name,canSize,canSize);
     can->cd();
-    hDeltaPhi[i][0]->GetYaxis()->SetRangeUser(0,0.6);
+    max=0.1;
+    for(int s = 0; s < kNSamples; ++s) {
+      if (hDeltaPhi[i][s]->GetMaximum()>max) max = hDeltaPhi[i][s]->GetMaximum();
+    }
+    hDeltaPhi[i][0]->SetMaximum(max*1.8);
+    //hDeltaPhi[i][0]->GetYaxis()->SetRangeUser(0,1.2);
     hDeltaPhi[i][0]->Draw(drawOptions[0]);
     for(int s = 1; s < kNSamples; ++s) {
       hDeltaPhi[i][s]->Draw(drawOptions[s]+"same");

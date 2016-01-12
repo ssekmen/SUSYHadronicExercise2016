@@ -284,8 +284,8 @@ void ControlRegion_Input(){
      plot.Stack(hNJets_DataGJ,hNJets_GJets,hNJets_QCD,c[2],"","Data","MC","Njets");
 
      //distributions of number of observed(Data and MC ) photons for barrel and endcap 
-     plot.Stack(hSearchBins_DataGJ_EB,hSearchBins_GJets_EB,hSearchBins_QCD_EB,c[3],"EB","Data","MC","ithBin-EB");
-     plot.Stack(hSearchBins_DataGJ_EE,hSearchBins_GJets_EE,hSearchBins_QCD_EE,c[4],"EE","Data","MC","ithBin-EE");
+     plot.Stack(hSearchBins_DataGJ_EB,hSearchBins_GJets_EB,hSearchBins_QCD_EB,c[3],"EB","Data","MC","Search_Bin_Number_Barrel");
+     plot.Stack(hSearchBins_DataGJ_EE,hSearchBins_GJets_EE,hSearchBins_QCD_EE,c[4],"EE","Data","MC","Search_Bin_Number_Endcap");
      
 
 }

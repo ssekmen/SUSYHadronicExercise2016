@@ -10,12 +10,12 @@
 #include "../Utils/HistReader.h"
 
 // === Main Function ===================================================
-void plotYields() {
+void plotYields_signal() {
 
   StyleMatters::init();
 
-  const int kNSamples = 6;
-  unsigned int ids[kNSamples] = { 11, 12, 13, 14, 21, 22 };
+  const int kNSamples = 4;
+  unsigned int ids[kNSamples] = { 31, 32, 33, 34 };
 
   TH1* hYields[kNSamples];
   for(int s = 0; s < kNSamples; ++s) { // Loop over samples
@@ -29,7 +29,6 @@ void plotYields() {
   std::cout << "Event yields" << std::endl;
   std::cout << "Selection\t" << std::flush;
   for(int s = 0; s < kNSamples; ++s) {
-    //std::cout << Sample::toTString(ids[s]) << " \t\t" << std::flush;
     std::string str = Sample::toTString(ids[s]).Data();
     printf(" %-20s:",str.c_str());
   }
