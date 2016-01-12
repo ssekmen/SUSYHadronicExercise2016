@@ -48,7 +48,6 @@ class PredictionMaker {
   TTree *tPrediction_;
 
   SearchBins *SearchBins_;
-  SearchBins *SearchBinsQCD_;
 
   UShort_t Bin_;
   Int_t isoTracks;
@@ -351,12 +350,7 @@ void PredictionMaker::Init(TTree *tree)
   fChain->SetBranchAddress("eeBadScFilter", &eeBadScFilter, &b_eeBadScFilter);
   fChain->SetBranchAddress("ElectronCharge", &ElectronCharge, &b_ElectronCharge);
   fChain->SetBranchAddress("Electrons", &Electrons, &b_Electrons);
-  fChain->SetBranchAddress("GenElec_MT2Activity", &GenElec_MT2Activity, &b_GenElec_MT2Activity);
-  fChain->SetBranchAddress("GenEls", &GenEls, &b_GenEls);
-  fChain->SetBranchAddress("genHT", &genHT, &b_genHT);
-  fChain->SetBranchAddress("GenMu_MT2Activity", &GenMu_MT2Activity, &b_GenMu_MT2Activity);
-  fChain->SetBranchAddress("GenMus", &GenMus, &b_GenMus);
-  fChain->SetBranchAddress("GenTaus", &GenTaus, &b_GenTaus);
+  if (!runOnData) fChain->SetBranchAddress("genHT", &genHT, &b_genHT);
   fChain->SetBranchAddress("HBHEIsoNoiseFilter", &HBHEIsoNoiseFilter, &b_HBHEIsoNoiseFilter);
   fChain->SetBranchAddress("HBHENoiseFilter", &HBHENoiseFilter, &b_HBHENoiseFilter);
   fChain->SetBranchAddress("HT", &HT, &b_HT);
@@ -392,7 +386,7 @@ void PredictionMaker::Init(TTree *tree)
   fChain->SetBranchAddress("TriggerNames", &TriggerNames, &b_TriggerNames);
   fChain->SetBranchAddress("TriggerPass", &TriggerPass, &b_TriggerPass);
   fChain->SetBranchAddress("TriggerPrescales", &TriggerPrescales, &b_TriggerPrescales);
-  fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
+  if (!runOnData) fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
   //   fChain->SetBranchAddress("ZCandidates", &ZCandidates, &b_ZCandidates);
   Notify();
 }

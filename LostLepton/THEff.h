@@ -138,12 +138,12 @@ effVec TH1Eff::GetEff(double xValue, bool asymm, bool verbose)
 	if (verbose) printf("Accessing efficiencies saved in %s\n",RatioTH1D_->GetName());
 
   	if(xValue < RatioTH1D_->GetXaxis()->GetXmin()){
-	    std::cout<<"Warning xValue: "<<xValue<<" is smaller than minimum of histo: "<<RatioTH1D_->GetName()<<std::endl;
+	  //	    std::cout<<"Warning xValue: "<<xValue<<" is smaller than minimum of histo: "<<RatioTH1D_->GetName()<<std::endl;
 	    xValue= RatioTH1D_->GetXaxis()->GetXmin()+0.01;
 	    //std::cout<<" Setting xValue to: "<<xValue<<std::endl;
 	}
 	else if(xValue > RatioTH1D_->GetXaxis()->GetXmax()){
-	    std::cout<<"Warning xValue: "<<xValue<<" is bigger than maximum of histo: "<<RatioTH1D_->GetName()<<" which is: "<<RatioTH1D_->GetXaxis()->GetXmax();
+	  //	    std::cout<<"Warning xValue: "<<xValue<<" is bigger than maximum of histo: "<<RatioTH1D_->GetName()<<" which is: "<<RatioTH1D_->GetXaxis()->GetXmax();
 	    xValue= RatioTH1D_->GetXaxis()->GetXmax()-0.01;
 	    //std::cout<<" Setting xValue to: "<<xValue<<std::endl;
 	}

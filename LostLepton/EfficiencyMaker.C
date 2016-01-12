@@ -4,12 +4,20 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
+// efficiencies stored in THEff objects
+// this is a custom class that simplifies calculating efficiencies and their uncertainties
+// see THEff.h for more details
+
 void EfficiencyMaker::Run(std::string outputFileName)
 {
 
+  // first create the THEff objects for each of the efficiencies we need
+  
   TH1::SetDefaultSumw2();
   gSystem->mkdir("Efficiencies"); 
 
+  // 1: muon acceptance -- binned in HT, MHT, NJets
+  
   const int muaccHT_ = 4;
   double muAccHT_ [muaccHT_] = {500,800,1200,10000};
   const int muaccMHT2D_ = 3;
@@ -18,6 +26,18 @@ void EfficiencyMaker::Run(std::string outputFileName)
   MuAccHTMHT_NJets78_ = new TH2Eff("MuAccHTMHT_NJets78","MuAccHTMHT_NJets78",muaccHT_-1,muAccHT_, muaccMHT2D_-1,muAccMHT2D_);
   MuAccHTMHT_NJets9Inf_ = new TH2Eff("MuAccHTMHT_NJets9Inf","MuAccHTMHT_NJets9Inf",muaccHT_-1,muAccHT_, muaccMHT2D_-1,muAccMHT2D_);
 
+  const int oneDPT_=8;
+  double OneDPT_[oneDPT_]={10,15,20,30,40,50,100,2500};
+  const int oneDActivity_=6;
+  double OneDActivity_[oneDActivity_]={0, 0.02, 0.05, 0.2, 1., 50.};
+
+  // 2: muon reconstruction -- binned in pt and "activity"
+  MuRecoActivityPT_ = new TH2Eff("MuRecoActivityPT","MuRecoActivityPT", oneDActivity_-1,OneDActivity_,oneDPT_-1,OneDPT_);
+
+  // 3: muon isolation -- binned in pt and "activity"
+  MuIsoActivityPT_ = new TH2Eff("MuIsoActivityPT","MuIsoActivityPT", oneDActivity_-1,OneDActivity_,oneDPT_-1,OneDPT_);
+
+  // 4: electron acceptance
   const int elecaccHT_ = 4;
   double elecAccHT_ [elecaccHT_] = {500,800,1200,10000};
   const int elecaccMHT2D_ = 3;
@@ -25,27 +45,27 @@ void EfficiencyMaker::Run(std::string outputFileName)
   ElecAccHTMHT_NJets78_ = new TH2Eff("ElecAccHTMHT_NJets78","ElecAccHTMHT_NJets78",elecaccHT_-1,elecAccHT_, elecaccMHT2D_-1,elecAccMHT2D_);
   ElecAccHTMHT_NJets9Inf_ = new TH2Eff("ElecAccHTMHT_NJets9Inf","ElecAccHTMHT_NJets9Inf",elecaccHT_-1,elecAccHT_, elecaccMHT2D_-1,elecAccMHT2D_);
 
-  const int oneDPT_=8;
-  double OneDPT_[oneDPT_]={10,15,20,30,40,50,100,2500};
-  const int oneDActivity_=6;
-  double OneDActivity_[oneDActivity_]={0, 0.02, 0.05, 0.2, 1., 50.};
-  MuIsoActivityPT_ = new TH2Eff("MuIsoActivityPT","MuIsoActivityPT", oneDActivity_-1,OneDActivity_,oneDPT_-1,OneDPT_);
-  ElecIsoActivityPT_ = new TH2Eff("ElecIsoActivityPT","ElecIsoActivityPT", oneDActivity_-1,OneDActivity_,oneDPT_-1,OneDPT_);
-  MuRecoActivityPT_ = new TH2Eff("MuRecoActivityPT","MuRecoActivityPT", oneDActivity_-1,OneDActivity_,oneDPT_-1,OneDPT_);
+  // 5: electron reconstruction -- binned in pt and "activity"
   ElecRecoActivityPT_ = new TH2Eff("ElecRecoActivityPT","ElecRecoActivityPT", oneDActivity_-1,OneDActivity_,oneDPT_-1,OneDPT_);
+  // 6: electron isolation -- binned in pt and "activity"
+  ElecIsoActivityPT_ = new TH2Eff("ElecIsoActivityPT","ElecIsoActivityPT", oneDActivity_-1,OneDActivity_,oneDPT_-1,OneDPT_);
 
   const int muaccNJets_ = 6;
   double muAccNJets_ [muaccNJets_] = {4,5,6,7,9,21};
   const int oneDNJets_=6;
   double OneDNJets_[oneDNJets_] = {4,5,6,7,9,21};
+  // 7: efficiency of transverse mass cut (used to defined control region) -- binned in HT, MHT, NJets
   MuMTWHTNJets_ = new TH2Eff("MuMTWHTNJets","MuMTWHTNJets",muaccHT_-1,muAccHT_, muaccNJets_-1, muAccNJets_);
+  // 8: di-lepton fudge factor -- fraction of control sample events that are truly 2-lepton events
   MuDiLepContributionMTWNJets_ = new TH1Eff("MuDiLepContributionMTWNJets1D","MuDiLepContributionMTWNJets1D",oneDNJets_-1,OneDNJets_);
+  // 9: another di-lepton fudge factor -- probability that a dilepton event enters our zero-lepton search region
   MuDiLepMTWNJets_ = new TH1Eff("MuDiLepMTWNJets1D","MuDiLepMTWNJets1D",oneDNJets_-1,OneDNJets_);
 
   const int isotrackreductionHT_ = 3;
   double isoTrackReductionHT_ [isotrackreductionHT_] = {500,1200,10000};
   const int isotrackreductionMHT_ = 3;
   double isoTrackReductionMHT_ [isotrackreductionMHT_] = {200,500,1900};
+  // 8: probability event is rejcted by track vetoes -- binned in HT, MHT, NJets
   MuIsoTrackReductionHTMHT_NJetsHigh_ = new TH2Eff("MuIsoTrackReductionHTMHT_NJetsHigh","MuIsoTrackReductionHTMHT_NJetsHigh", isotrackreductionHT_-1,isoTrackReductionHT_, isotrackreductionMHT_-1,isoTrackReductionMHT_);
   ElecIsoTrackReductionHTMHT_NJetsHigh_ = new TH2Eff("ElecIsoTrackReductionHTMHT_NJetsHigh","ElecIsoTrackReductionHTMHT_NJetsHigh", isotrackreductionHT_-1,isoTrackReductionHT_, isotrackreductionMHT_-1,isoTrackReductionMHT_);
   PionIsoTrackReductionHTMHT_NJetsHigh_ = new TH2Eff("PionIsoTrackReductionHTMHT_NJetsHigh","PionIsoTrackReductionHTMHT_NJetsHigh", isotrackreductionHT_-1,isoTrackReductionHT_, isotrackreductionMHT_-1,isoTrackReductionMHT_);
@@ -72,21 +92,23 @@ void EfficiencyMaker::Run(std::string outputFileName)
     if(Weight<0) continue;
     if(Bin > 900) continue;
 
+    // we already applied the kinematic cuts we need in step 1
+
     // calculate muon efficiencies
     // acceptance
-    if(muAcc==2) {
+    if(muAcc==2) { // this event had a muon in acceptance
       if(NJets > 6.5 && NJets < 8.5) MuAccHTMHT_NJets78_->Fill(HT,MHT,Weight,true);
       if(NJets > 8.5) MuAccHTMHT_NJets9Inf_->Fill(HT,MHT,Weight,true);
-    } else if (muAcc==0) {
+    } else if (muAcc==0) { // the event had a muon out-of-acceptance
       if(NJets > 6.5 && NJets < 8.5) MuAccHTMHT_NJets78_->Fill(HT,MHT,Weight,false);
       if(NJets > 8.5) MuAccHTMHT_NJets9Inf_->Fill(HT,MHT,Weight,false);
     }
     // reconstruction
-    if(muReco==2) MuRecoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,true);
-    else if(muReco==0)  MuRecoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,false);
+    if(muReco==2) MuRecoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,true); // muon reconstructed
+    else if(muReco==0) MuRecoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,false); // muon in acceptance, but not reconstructed
     // isolation
-    if(muIso==2) MuIsoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,true);
-    else if(muIso==0)  MuIsoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,false);
+    if(muIso==2) MuIsoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,true); // muon isolated
+    else if(muIso==0) MuIsoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,false); // muon in acceptance and recosntructed, but not isolated
 
 
     // calculate electron efficiencies
@@ -109,12 +131,12 @@ void EfficiencyMaker::Run(std::string outputFileName)
     if(muIso==2 && MTW < 100) MuMTWHTNJets_->Fill(HT, NJets, Weight, true);
     else if(muIso==2 && MTW > 100) MuMTWHTNJets_->Fill(HT, NJets, Weight, false);
 
-    if (MuDiLepControlSample==2) {
-      MuDiLepMTWNJets_->Fill(NJets,Weight,true);
-      MuDiLepContributionMTWNJets_->Fill(NJets,Weight,true);
-    } else if(MuDiLepControlSample==0) {
-      MuDiLepMTWNJets_->Fill(NJets,Weight,false);
-      MuDiLepContributionMTWNJets_->Fill(NJets,Weight,false);
+    if (MuDiLepControlSample==2) { // event has 1 true lepton
+      if (MTW<100) MuDiLepMTWNJets_->Fill(NJets,Weight,true);
+      if (MTW<100) MuDiLepContributionMTWNJets_->Fill(NJets,Weight,true);
+    } else if(MuDiLepControlSample==0) { // event has 2 true leptons
+      MuDiLepMTWNJets_->Fill(NJets,Weight,false); // in signal region
+      if (MTW<100)  MuDiLepContributionMTWNJets_->Fill(NJets,Weight,false); // contaminates control sample
     }
 
     // track veto

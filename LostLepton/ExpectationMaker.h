@@ -42,8 +42,6 @@ const double maxMuEta_=2.4;
 const double minElecPt_=10;
 const double maxElecEta_=2.5;
 const double mtwCut_=100;
-const double minTauPt_=10;
-const double maxTauEta_=2.4;
 // lepton matching
 const double maxDeltaRGenToRecoMu_ =0.3;
 const double maxDiffPtGenToRecoMu_ =0.5;
@@ -58,6 +56,8 @@ const double maxDeltaRRecoToIsoElec_ =0.1;
 const double maxDiffPtRecoToIsoElec_ =0.1;
 const double maxDeltaRIsoToGenElec_ = 0.3;
 const double maxDiffPtIsoToGenElec_ = 0.3;
+
+const bool useTriggerEffWeight = true;
 
 class ExpectationMaker {
  public :

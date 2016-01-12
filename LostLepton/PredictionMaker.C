@@ -27,7 +27,7 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
   ExpectationReductionElecIsoTrackHTMHT_NJetsHighEff_ = new TH2Eff("ElecIsoTrackReductionHTMHT_NJetsHigh", EffInputFolder);
   ExpectationReductionPionIsoTrackHTMHT_NJetsHighEff_ = new TH2Eff("PionIsoTrackReductionHTMHT_NJetsHigh", EffInputFolder);
 
-    // TProfiles
+  // TProfiles -- prepare for saving event weights
   MuMeanWeight_ = new TProfile("MuMeanWeight","MuMeanWeight",6,1.,7.);
   MuMeanWeight_->Sumw2();
   for(int b = 0; b <6; b++){
@@ -39,7 +39,7 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
   outPutFile->cd();
   // setup output tree
   tPrediction_ = new TTree("pred_tree","tree for calculating prediction from data or MC");
-
+  // define output branches
   tPrediction_->Branch("HT",&HT);
   tPrediction_->Branch("MHT",&MHT);
   tPrediction_->Branch("NJets",&NJets);
@@ -127,26 +127,17 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
     resetValues();
-    
+
+    // cut on genHT for leptonic ttbar samples
     if(HTgen_cut > 0.01 && genHT > HTgen_cut) continue;
 
-    // basic kinematic cuts (probably applied at skim level)
+    // basic kinematic cuts 
     if(HT<500|| MHT< 200 || NJets < 7 || BTags < 2  ) continue;
     if(DeltaPhi1 < 0.5 || DeltaPhi2 < 0.5 || DeltaPhi3 < 0.3 || DeltaPhi4 < 0.3) continue;
     if(!FiltersPass() ) continue;
-    //    cout << "Event passed all kinematic and cleaning cuts..." << endl;
-    // if(useFilterList){
-    //   bool CSCTightHaloFilterUpdate = evtListFilter->CheckEvent(RunNum,LumiBlockNum,EvtNum);
-    //   if(!CSCTightHaloFilterUpdate) continue;
-    // } 
 
     if (Muons->size()!=1 || Electrons->size()!=0) continue; // 1-muon control sample events
-    // cout << "Single muon event..." << endl;
 
-
-    // printf("MHT/HT/NJets/BTags: %3.2f/%3.2f/%d/%d\n", MHT, HT, NJets, BTags);
-    // printf("Mu pt/eta/act: %3.2f/%3.2f/%f\n", Muons->at(0).Pt(), Muons->at(0).Eta(), selectedIDIsoMuons_MT2Activity->at(0));
-    
     isoTracks= isoElectronTracks + isoMuonTracks + isoPionTracks;
 
     selectedIDMuonsNum_ = selectedIDMuons->size();
@@ -156,92 +147,96 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
 
     JetsNum_ = Jets->size();
 
-    if(useTrigger) if(!TriggerPass->at(34) && !TriggerPass->at(35) && !TriggerPass->at(36)) continue;
-    if(useTriggerEffWeight) Weight *= GetTriggerEffWeight(MHT);
+    // In this step we want to calculate a unique weight for each control sample event
+    // this is the weight we will fill in our prediction histogram
+    // summing weights over all control sample events will give us the full prediction in the search region
+    // these weights depend on lepton acceptance & efficiencies, the MTW cut efficiency, the di-lepton fudge factors
+    // For MC samples, the "Weight" "branch" is pre-assigned a valued based on the cross section of each process.
+    // For data, we start at 1.
 
-    // if(doPUreweighting){
-    //   w_pu = puhist->GetBinContent(puhist->GetXaxis()->FindBin(min(TrueNumInteractions,puhist->GetBinLowEdge(puhist->GetNbinsX()+1))));
-    //   Weight *= w_pu;
-    // }
+    // apply trigger on data
+    if(useTrigger) if(!TriggerPass->at(34) && !TriggerPass->at(35) && !TriggerPass->at(36)) continue;
+    // don't apply simulated trigger on MC, instead correct for trigger inneficiency
+    if(useTriggerEffWeight) Weight *= GetTriggerEffWeight(MHT);
 
     if(runOnData) Weight = 1.;
 
     Bin_ = SearchBins_->GetBinNumber(HT,MHT,NJets,BTags);
 
-    //  expectationReductionIsoTrackEffVec_= ExpectationReductionIsoTrackHTMHT_NJetsHighEff_->GetEff(HT, MHT, useAsymmErrors);
-    expectationReductionMuIsoTrackEffVec_ = ExpectationReductionMuIsoTrackHTMHT_NJetsHighEff_->GetEff(HT, MHT, useAsymmErrors);
-    expectationReductionElecIsoTrackEffVec_ = ExpectationReductionElecIsoTrackHTMHT_NJetsHighEff_->GetEff(HT, MHT, useAsymmErrors);
-    expectationReductionPionIsoTrackEffVec_ = ExpectationReductionPionIsoTrackHTMHT_NJetsHighEff_->GetEff(HT, MHT, useAsymmErrors);
+    // this is how we load the efficiencies and other correction factors from our THEff objects
 
-    //for compatibility
-    // expectationReductionIsoTrackEff_ = expectationReductionIsoTrackEffVec_.eff;
-    expectationReductionMuIsoTrackEff_ = expectationReductionMuIsoTrackEffVec_.eff;
-    expectationReductionElecIsoTrackEff_ = expectationReductionElecIsoTrackEffVec_.eff;
-    expectationReductionPionIsoTrackEff_ = expectationReductionPionIsoTrackEffVec_.eff;
-
-
-    // get Efficiencies
-    muMTWEffVec_ = MuMTWHTNJets_->GetEff(HT, NJets, useAsymmErrors);
-    muDiLepContributionMTWAppliedEffVec_ = MuDiLepContributionMTWAppliedNJets_->GetEff(NJets, false); 
-    muDiLepEffMTWAppliedEffVec_ = MuDiLepEffMTWAppliedNJets_->GetEff(NJets, false);      // these were returning 0, so I turned off AsymmErrors
-                                                                                        // seem to be symmetric anyway
-
+    // muon efficiencies
     muIsoEffVec_ = MuIsoActivityPT_->GetEff(selectedIDIsoMuons_MT2Activity->at(0), Muons->at(0).Pt(), useAsymmErrors);
+    muIsoEff_ = muIsoEffVec_.eff;
     muRecoEffVec_ = MuRecoActivityPT_->GetEff(selectedIDIsoMuons_MT2Activity->at(0), Muons->at(0).Pt(), useAsymmErrors);
+    muRecoEff_ = muRecoEffVec_.eff;
     if(NJets<8.5) muAccEffVec_ = MuAccHTMHT_NJets78_->GetEff(HT,MHT, useAsymmErrors);
     else muAccEffVec_ = MuAccHTMHT_NJets9Inf_->GetEff(HT,MHT, useAsymmErrors);
+    muAccEff_ = muAccEffVec_.eff;
 
+    // electron efficiencies
     elecIsoEffVec_ = ElecIsoActivityPT_->GetEff(selectedIDIsoMuons_MT2Activity->at(0), Muons->at(0).Pt(), useAsymmErrors);
+    elecIsoEff_ = elecIsoEffVec_.eff;
     elecRecoEffVec_ = ElecRecoActivityPT_->GetEff(selectedIDIsoMuons_MT2Activity->at(0), Muons->at(0).Pt(), useAsymmErrors);
+    elecRecoEff_ = elecRecoEffVec_.eff;
     if(NJets<8.5) elecAccEffVec_ = ElecAccHTMHT_NJets78_->GetEff(HT,MHT, useAsymmErrors);
     else elecAccEffVec_ = ElecAccHTMHT_NJets9Inf_->GetEff(HT,MHT, useAsymmErrors);
+    elecAccEff_ = elecAccEffVec_.eff;
+
+    // control region MTW cut efficiency
+    muMTWEffVec_ = MuMTWHTNJets_->GetEff(HT, NJets, useAsymmErrors);
+    muMTWEff_ = muMTWEffVec_.eff;
+    // the di-lepton fudge factors
+    muDiLepContributionMTWAppliedEffVec_ = MuDiLepContributionMTWAppliedNJets_->GetEff(NJets, false); 
+    muDiLepContributionMTWAppliedEff_ = muDiLepContributionMTWAppliedEffVec_.eff;
+    muDiLepEffMTWAppliedEffVec_ = MuDiLepEffMTWAppliedNJets_->GetEff(NJets, false);
+    muDiLepEffMTWAppliedEff_ = muDiLepEffMTWAppliedEffVec_.eff;
+  
+    // isolated track veto correction factors
+    expectationReductionMuIsoTrackEffVec_ = ExpectationReductionMuIsoTrackHTMHT_NJetsHighEff_->GetEff(HT, MHT, useAsymmErrors);
+    expectationReductionMuIsoTrackEff_ = expectationReductionMuIsoTrackEffVec_.eff;
+    expectationReductionElecIsoTrackEffVec_ = ExpectationReductionElecIsoTrackHTMHT_NJetsHighEff_->GetEff(HT, MHT, useAsymmErrors);
+    expectationReductionElecIsoTrackEff_ = expectationReductionElecIsoTrackEffVec_.eff;
+    expectationReductionPionIsoTrackEffVec_ = ExpectationReductionPionIsoTrackHTMHT_NJetsHighEff_->GetEff(HT, MHT, useAsymmErrors);
+    expectationReductionPionIsoTrackEff_ = expectationReductionPionIsoTrackEffVec_.eff;
 	
 
-    //for compatibility
-    muMTWEff_ = muMTWEffVec_.eff;
-    muDiLepContributionMTWAppliedEff_ = muDiLepContributionMTWAppliedEffVec_.eff;
-    muDiLepEffMTWAppliedEff_ = muDiLepEffMTWAppliedEffVec_.eff;
-    muIsoEff_ = muIsoEffVec_.eff;
-    muRecoEff_ = muRecoEffVec_.eff;
-    muAccEff_ = muAccEffVec_.eff;
-    elecAccEff_ = elecAccEffVec_.eff;
-    elecRecoEff_ = elecRecoEffVec_.eff;
-    elecIsoEff_ = elecIsoEffVec_.eff;      
-
-    // calculate Weights
-    // muCS >99% purity
-    //purityCorrectedWeight_ = Weight * muPurityCorrection_;
-    purityCorrectedWeight_ = Weight;
-    mtwCorrectedWeight_ = purityCorrectedWeight_ / muMTWEff_;  
+    // now calculate the full weights
+    // correct for innefficiency of control region MTW cut
+    mtwCorrectedWeight_ = Weight_ / muMTWEff_;
+    // correct for contamination of control region from di-lepton events 
     mtwDiLepCorrectedWeight_ = mtwCorrectedWeight_ * muDiLepContributionMTWAppliedEff_;
-
-    //    printf("purityCorrectedWeight / mtwCorrectedWeight / mtwDiLepCorrectedWeight = %f / %f / %f\n", purityCorrectedWeight_, mtwCorrectedWeight_, mtwDiLepCorrectedWeight_);
-
-    //    printf("muIsoEff / muRecoEff / muAccEff = %f / %f / %f\n", muIsoEff_, muRecoEff_, muAccEff_);
-    muIsoWeight_ = mtwDiLepCorrectedWeight_* (1 - muIsoEff_)/muIsoEff_; 
+    // lepton efficiency weights
+    // probability lepton fails isolation
+    muIsoWeight_ = mtwDiLepCorrectedWeight_* (1 - muIsoEff_)/muIsoEff_;
+    // probability lepton fails reconstruction
     muRecoWeight_ = mtwDiLepCorrectedWeight_* 1 / muIsoEff_ * (1-muRecoEff_)/muRecoEff_;    
+    // probability lepton out-of-acceptance
     muAccWeight_ = mtwDiLepCorrectedWeight_* 1 / muIsoEff_ * 1 / muRecoEff_ * (1-muAccEff_)/muAccEff_;    
-    //    printf("muIsoWeight / muRecoWeight / muAccWeight = %f / %f / %f\n", muIsoWeight_, muRecoWeight_, muAccWeight_);
+    // sum the threee contributions
     muTotalWeight_ = muIsoWeight_ + muRecoWeight_ + muAccWeight_;
-    totalMuons_ = mtwDiLepCorrectedWeight_ / ( muIsoEff_ * muRecoEff_ * muAccEff_);    
-    //    printf("muTotalWeight / totalMuons = %f / %f\n", muTotalWeight_, totalMuons_);
-
-    //    printf("elecIsoEff / elecRecoEff / elecAccEff = %f / %f / %f\n", elecIsoEff_, elecRecoEff_, elecAccEff_);
+    
+    // calculate the "muon term" in the electron efficiency expressions -- what does it represent
+    totalMuons_ = mtwDiLepCorrectedWeight_ / ( muIsoEff_ * muRecoEff_ * muAccEff_);
+    // use it to calculate the electron efficiencies
     elecAccWeight_ = totalMuons_ * (1 - elecAccEff_);
     elecRecoWeight_ = totalMuons_ * (elecAccEff_) * (1-elecRecoEff_);
     elecIsoWeight_ = totalMuons_ * (elecAccEff_) * (elecRecoEff_) * (1-elecIsoEff_);
-    //    printf("elecIsoWeight / elecRecoWeight / elecAccWeight = %f / %f / %f\n", elecIsoWeight_, elecRecoWeight_, elecAccWeight_);
+    // why did we calculate these in the reverse order from what we used for the muons
     elecTotalWeight_ = elecIsoWeight_ + elecRecoWeight_ + elecAccWeight_;
     totalElectrons_ = mtwDiLepCorrectedWeight_ / ( elecIsoEff_ * elecRecoEff_ * elecAccEff_);
-    //    printf("elecTotalWeight / totalElectrons = %f / %f\n", elecTotalWeight_, totalElectrons_);
+
+    // the the total mu+e contribution to the lost-lepton background
     totalWeight_ = elecTotalWeight_ + muTotalWeight_;
 
+    // now correct this to account for the very small di-lepton background in the search region
     totalWeightDiLep_ = totalWeight_ + (1-muDiLepContributionMTWAppliedEff_) * mtwCorrectedWeight_ * (1-muDiLepEffMTWAppliedEff_)/muDiLepEffMTWAppliedEff_;
+    // and finally correct it to account for the background rejected by the track veto
     totalWeightDiLepIsoTrackReducedCombined_ = totalWeightDiLep_ * (1 - (expectationReductionMuIsoTrackEff_ + expectationReductionElecIsoTrackEff_ + expectationReductionPionIsoTrackEff_));
-    //    printf("totalWeight / totalWeightDiLep / totalWeightDiLepIsoTrackReducedCombined = %f / %f / %f\n", totalWeight_, totalWeightDiLep_, totalWeightDiLepIsoTrackReducedCombined_);
-
-    MTW=selectedIDIsoMuons_MTW->at(0);
     
+    MTW=selectedIDIsoMuons_MTW->at(0);
+
+    // add the full event weight to the per-search-bin histogram--we'll use this to assign statistical uncertainties in the next step
     if(MTW<100){
       MuMeanWeight_->Fill(Bin_+0.01, totalWeightDiLepIsoTrackReduced_/Weight, Weight);
       if(Bin_<=6){
@@ -249,7 +244,7 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
       }
     }
 
-    //    cout << "Write event to tree..." << endl;
+    // write event to tree
     tPrediction_->Fill();
 
     
@@ -308,15 +303,14 @@ void PredictionMaker::resetValues()
 bool PredictionMaker::FiltersPass()
 {
   bool result=true;
-  //if(useFilterData){
-    //if(!CSCTightHaloFilter) result=false;
-    if(eeBadScFilter!=1) result=false;
-    if(!eeBadSc4Filter) result=false;
-    if(!HBHENoiseFilter) result=false;
-    if(!HBHEIsoNoiseFilter) result=false;
-    //  }
+
+  if(!CSCTightHaloFilter) result=false;
+  if(eeBadScFilter!=1) result=false;
+  if(!eeBadSc4Filter) result=false;
+  if(!HBHENoiseFilter) result=false;
+  if(!HBHEIsoNoiseFilter) result=false;
+
   if(NVtx<=0) result=false;
-  // Do not apply on fastSim samples!
-  // if(!signalScan) if(JetID!=1) result=false;
+  
   return result;
 }

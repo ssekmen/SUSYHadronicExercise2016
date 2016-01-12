@@ -40,35 +40,25 @@ void ExpectationMaker::Run(std::string outputFileName, double HTgen_cut)
   tExpectation_->Branch("muReco",&muReco);  
   tExpectation_->Branch("muIso",&muIso);  
   tExpectation_->Branch("MTW",&mtw);  
-  //  tExpectation_->Branch("IsoTrackMTW",&isoTrackMTW_); 
   tExpectation_->Branch("elecAcc",&elecAcc);  
   tExpectation_->Branch("elecReco",&elecReco);  
-  tExpectation_->Branch("elecIso",&elecIso);  
-  //  tExpectation_->Branch("muIsoTrack",&muIsoTrack);  
-  //  tExpectation_->Branch("MuPurity",&MuPurity_); 
-  //  tExpectation_->Branch("ElecPurity",&ElecPurity_); 
+  tExpectation_->Branch("elecIso",&elecIso);   
   tExpectation_->Branch("selectedIDIsoMuonsNum",&selectedIDIsoMuonsNum_);
   tExpectation_->Branch("selectedIDIsoMuons", "std::vector<TLorentzVector>", &Muons, 32000, 0);
-  tExpectation_->Branch("muIsoMatched", &muIsoMatched);
   tExpectation_->Branch("selectedIDIsoMuons_MTW", &selectedIDIsoMuons_MTW);
   tExpectation_->Branch("selectedIDIsoMuons_MT2Activity", &selectedIDIsoMuons_MT2Activity);
   tExpectation_->Branch("selectedIDMuonsNum",&selectedIDMuonsNum_);
   tExpectation_->Branch("selectedIDMuons", "std::vector<TLorentzVector>", &selectedIDMuons, 32000, 0);
-  tExpectation_->Branch("selectedIDMuonsMatched", &muRecoMatched);
   tExpectation_->Branch("selectedIDMuons_MTW", &selectedIDMuons_MTW);
   tExpectation_->Branch("selectedIDMuons_MiniIso", &selectedIDMuons_MiniIso);
-  //  tExpectation_->Branch("selectedIDMuons_MT2Activity", &selectedIDMuons_MT2Activity);
   tExpectation_->Branch("selectedIDIsoElectronsNum",&selectedIDIsoElectronsNum_);
   tExpectation_->Branch("selectedIDIsoElectrons", "std::vector<TLorentzVector>", &Electrons, 32000, 0);
-  tExpectation_->Branch("elecIsoMatched", &elecIsoMatched);
   tExpectation_->Branch("selectedIDIsoElectrons_MTW", &selectedIDIsoElectrons_MTW);
   tExpectation_->Branch("selectedIDIsoElectrons_MT2Activity", &selectedIDIsoElectrons_MT2Activity);
   tExpectation_->Branch("selectedIDElectronsNum",&selectedIDElectronsNum_);
   tExpectation_->Branch("selectedIDElectrons", "std::vector<TLorentzVector>", &selectedIDElectrons, 32000, 0);
-  tExpectation_->Branch("selectedIDElectronsMatched", &elecRecoMatched);
   tExpectation_->Branch("selectedIDElectrons_MTW", &selectedIDElectrons_MTW);
   tExpectation_->Branch("selectedIDElectrons_MiniIso", &selectedIDElectrons_MiniIso);
-  //  tExpectation_->Branch("selectedIDElectrons_MT2Activity", &selectedIDElectrons_MT2Activity);
  
   tExpectation_->Branch("isoElectronTracks",&isoElectronTracks);
   tExpectation_->Branch("isoMuonTracks",&isoMuonTracks);
@@ -102,33 +92,20 @@ void ExpectationMaker::Run(std::string outputFileName, double HTgen_cut)
 
     resetValues();
 
+    // for the leptonic ttbar smaples inclusive in genHT, we'll reject high-genHT events to avoid double-counting
     if(HTgen_cut > 0.01 && genHT > HTgen_cut) continue;
 
     // basic kinematic cuts (probably applied at skim level)
-    if(HT<500|| MHT< 200 || NJets < 7  ) continue; // NOTE: should we loosen this NJets cut for calculating efficiencies???
+    if(HT<500|| MHT< 200 || NJets < 7  ) continue; // something to ponder: should we loosen this NJets cut for calculating efficiencies???
     if(DeltaPhi1 < 0.5 || DeltaPhi2 < 0.5 || DeltaPhi3 < 0.3 || DeltaPhi4 < 0.3) continue;
+    // event cleaning -- reject events with bad detector effects, etc.
     if(!FiltersPass() ) continue;
 
-    // bool passTrigger = false;	
-    // for (std::vector<string>::iterator it = TriggerNames->begin() ; it != TriggerNames->end(); ++it){
-    //   if(it->find("HLT_PFHT350_PFMET100_NoiseCleaned_v")!=std::string::npos){  // Run2015A,B
-    // 	if(TriggerPass->at(it - TriggerNames->begin())>0.5) passTrigger = true;
-    //   }
-    //   if(it->find("HLT_PFHT350_PFMET100_JetIdCleaned_v")!=std::string::npos){  // Run2015C.D
-    // 	if(TriggerPass->at(it - TriggerNames->begin())>0.5) passTrigger = true;
-    //   }
-    // }
-    // if(useTrigger && !passTrigger) continue;
-
-    //if(useTriggerEffWeight) Weight = Weight * GetTriggerEffWeight(MHT);
-
-    // if(doPUreweighting){
-    //   w_pu = puhist->GetBinContent(puhist->GetXaxis()->FindBin(min(TrueNumInteractions,puhist->GetBinLowEdge(puhist->GetNbinsX()+1))));
-    //   Weight *= w_pu;
-    // }
+    // we don't apply the simulated trigger on the MC, but we doapply a fudge-factor to account for small inneficiency at low-MET
+    // trigger weights hard-coded in LLTools.h
+    if(useTriggerEffWeight) Weight = Weight * GetTriggerEffWeight(MHT);
   
     Bin_ = SearchBins_->GetBinNumber(HT,MHT,NJets,BTags);
-    //    std::cout << "Event falls in bin " << Bin_ << std::endl;
     isoTracks = isoMuonTracks + isoPionTracks + isoElectronTracks;
 
     GenMuNum_ = GenMus->size();
@@ -143,157 +120,130 @@ void ExpectationMaker::Run(std::string outputFileName, double HTgen_cut)
     selectedIDIsoElectronsNum_ = Electrons->size();
 
 
-    // compute efficiencies 1 muon
+    // compute variables useful for calculating muon efficiencies
+    // Expectation can be 1 (lost lepton event), 2 (lepton passes all cuts, not lost)
+    // muAcc, muReco, muIso can be 0 (muon fails cut), 2 (muon passed cut), or 1 (no relevant muon in event)
+    // also will define MuDiLepControlSample -- what does this do?
     if( GenMuNum_==1 && GenElecNum_==0 )
-      {
-	if ( GenMus->at(0).Pt() < minMuPt_ || std::abs(GenMus->at(0).Eta()) > maxMuEta_)
-	  {
+      { // true single-muon events
+	if ( GenMus->at(0).Pt() < minMuPt_ || std::abs(GenMus->at(0).Eta()) > maxMuEta_) // is the muon in kinematic and geometric acceptance?
+	  { // not in acceptance -- muon is lost
 	    muAcc=0;
 	    Expectation=1;
 	    // efficiency studies TH1 and so on
 	  }
 	else
-	  {
+	  { // muon is in acceptance, now check if it was recosntructed and ID'd
 	    muAcc=2;
 	    bool RecoNotMatched=true;
-	    // efficiency studies TH1 and so on
-      
-	    for (UShort_t i=0; i<selectedIDMuonsNum_; i++)
+	    for (UShort_t i=0; i<selectedIDMuonsNum_; i++) // loop over the RECO muons, try to find one matching the gen muon
 	      {
-		//std::cout<<"selectedIDMuonsNum_["<<i<<"] started"<<std::endl;
+		// deltaR = sqrt(dEta*dEta + dPhi*dPhi)
 		if(deltaR(GenMus->at(0).Eta(),GenMus->at(0).Phi(),selectedIDMuons->at(i).Eta(),selectedIDMuons->at(i).Phi())<maxDeltaRGenToRecoMu_ && std::abs(GenMus->at(0).Pt()-selectedIDMuons->at(i).Pt())/GenMus->at(0).Pt() <maxDiffPtGenToRecoMu_)
-		  {
-		    // std::cout<<"selectedIDMuonsNum_["<<i<<"] started"<<std::endl;
-		    RecoNotMatched=false;
-		    // efficiency studies TH1 and so on
-          
+		  { // found a RECO muon mathching the gen particle -- the muon was reconstructed, now check to see if it passes the isolation cut
+		    RecoNotMatched=false;          
 		    muReco =2;
-		    muRecoMatched.push_back(1);
 		    bool IsoNotMatched=true;
-		    for (UShort_t ii=0; ii < selectedIDIsoMuonsNum_; ii++)
+		    for (UShort_t ii=0; ii < selectedIDIsoMuonsNum_; ii++) // loop over the isolated muons (also RECO'd and ID'd), try to find another match
 		      {
 			if(deltaR(Muons->at(ii).Eta(),Muons->at(ii).Phi(),selectedIDMuons->at(i).Eta(),selectedIDMuons->at(i).Phi())<maxDeltaRRecoToIsoMu_ && std::abs(Muons->at(ii).Pt()-selectedIDMuons->at(i).Pt())/Muons->at(ii).Pt() <maxDiffPtRecoToIsoMu_)
-			  {
+			  { // muon was also isolated -- we found it
 			    IsoNotMatched=false;
-			    // efficiency studies TH1 and so on
 			    muIso=2;
-			    muIsoMatched.push_back(1);
 			    Expectation=2;
-			    mtw = selectedIDIsoMuons_MTW->at(ii);
+			    mtw = selectedIDIsoMuons_MTW->at(ii); // compute the transverse mass of the mu-MET system
 			    MuDiLepControlSample_=2;
 			  }
-			else 
-			  {
-			    muIsoMatched.push_back(0);
-			  }
 		      }
 		    if(IsoNotMatched)
-		      {
+		      { // we couldn't find any isolated muon match -- the muon failed the isolation cut
 			muIso=0;
-			Expectation=1;
+			Expectation=1; // lost-lepton event
 		      }
-		  }
-		else 
-		  {
-		    muRecoMatched.push_back(0);
 		  }
 	      }
 	    if(RecoNotMatched)
-	      {
+	      { // we couldn't find any reconstructed lepton
 		muReco=0;
-		Expectation=1;   
+		Expectation=1; // lost-lepton event  
 	      }
 	  }
       } 
-    // analyse gen electrons consider only single elec events
-    //    cout << "analyse gen electrons consider only single elec events" << endl;
-    if(GenMuNum_==0 && GenElecNum_==1)
-      {
-	if ( GenEls->at(0).Pt() < minElecPt_ || std::abs(GenEls->at(0).Eta()) > maxElecEta_)
-	  {
+
+    // now compute variables useful for calculating electron efficiencies
+    // Expectation can be 1 (lost lepton event), 2 (lepton passes all cuts, not lost)
+    // elecAcc, elecReco, elecIso can be 0 (electron fails cut), 2 (electron passed cut), or 1 (no relevant electron in event)
+    if( GenMuNum_==0 && GenElecNum_==1 )
+      { // true single-electron events
+	if ( GenEls->at(0).Pt() < minElecPt_ || std::abs(GenEls->at(0).Eta()) > maxElecEta_) // is the electron in kinematic and geometric acceptance?
+	  { // not in acceptance -- electron is lost
 	    elecAcc=0;
 	    Expectation=1;
+	    // efficiency studies TH1 and so on
 	  }
 	else
-	  {
+	  { // electron is in acceptance, now check if it was recosntructed and ID'd
 	    elecAcc=2;
 	    bool RecoNotMatched=true;
-
-	    RecoNotMatched=true;
-	    // efficiency studies TH1 and so on
-	    for (UShort_t i=0; i<selectedIDElectronsNum_; i++)
+	    for (UShort_t i=0; i<selectedIDElectronsNum_; i++) // loop over the RECO electrons, try to find one matching the gen electron
 	      {
-		//    std::cout<<"selectedIDElectronsNum_["<<i<<"] started"<<std::endl;
+		// deltaR = sqrt(dEta*dEta + dPhi*dPhi)
 		if(deltaR(GenEls->at(0).Eta(),GenEls->at(0).Phi(),selectedIDElectrons->at(i).Eta(),selectedIDElectrons->at(i).Phi())<maxDeltaRGenToRecoElec_ && std::abs(GenEls->at(0).Pt()-selectedIDElectrons->at(i).Pt())/GenEls->at(0).Pt() <maxDiffPtGenToRecoElec_)
-		  {
-		    //        std::cout<<"Matched to gen electron"<<std::endl;
-		    RecoNotMatched=false;
+		  { // found a RECO electron mathching the gen particle -- the electron was reconstructed, now check to see if it passes the isolation cut
+		    RecoNotMatched=false;          
 		    elecReco =2;
-		    elecRecoMatched.push_back(1);
 		    bool IsoNotMatched=true;
-		    for (UShort_t ii=0; ii < selectedIDIsoElectronsNum_; ii++)
+		    for (UShort_t ii=0; ii < selectedIDIsoElectronsNum_; ii++) // loop over the isolated electrons (also RECO'd and ID'd), try to find another match
 		      {
-			//      std::cout<<"selectedIDIsoElectronsNum_["<<ii<<"] started"<<std::endl;
 			if(deltaR(Electrons->at(ii).Eta(),Electrons->at(ii).Phi(),selectedIDElectrons->at(i).Eta(),selectedIDElectrons->at(i).Phi())<maxDeltaRRecoToIsoElec_ && std::abs(Electrons->at(ii).Pt()-selectedIDElectrons->at(i).Pt())/Electrons->at(ii).Pt() <maxDiffPtRecoToIsoElec_)
-			  {
+			  { // electron was also isolated -- we found it
 			    IsoNotMatched=false;
 			    elecIso=2;
-			    elecIsoMatched.push_back(1);
 			    Expectation=2;
-			    mtw =  selectedIDIsoElectrons_MTW->at(ii);
+			    mtw = selectedIDIsoElectrons_MTW->at(ii); // compute the transverse mass of the elec-MET system
 			    ElecDiLepControlSample_=2;
-			  }
-			else 
-			  {
-			    elecIsoMatched.push_back(0);
 			  }
 		      }
 		    if(IsoNotMatched)
-		      {
+		      { // we couldn't find any isolated electron match -- the electron failed the isolation cut
 			elecIso=0;
-			Expectation=1;
+			Expectation=1; // lost-lepton event
 		      }
-		  }
-		else 
-		  {
-		    elecRecoMatched.push_back(0);
 		  }
 	      }
 	    if(RecoNotMatched)
-	      {
+	      { // we couldn't find any reconstructed lepton
 		elecReco=0;
-		Expectation=1;
-        
-		// efficiency studies TH1 and so on
+		Expectation=1; // lost-lepton event  
 	      }
 	  }
       } 
 
-    // di leptonic events
-    //     cout << "Look for di leptonic events" << endl;
+    // di--leptonic events -- a very small BG 
+    // they also can contaminate our one-lepton control region
+    // we'll find a small fudge factor to account for both of these effects
     if( (GenMuNum_+GenElecNum_)==2)
-      {
+      { // true di-lepton event
 	if(selectedIDIsoMuonsNum_==0 && selectedIDIsoElectronsNum_==0)
-	  {
+	  { // completely lost
 	    Expectation=1;
 	    ExpectationDiLep_=1;
 	  }
 	if(selectedIDIsoMuonsNum_==1 && selectedIDIsoElectronsNum_==0)
-	  {
+	  { // contaminates 1-muon region
 	    mtw =  selectedIDIsoMuons_MTW->at(0);
 	    MuDiLepControlSample_=0;
 	  }
 	if(selectedIDIsoMuonsNum_==0 && selectedIDIsoElectronsNum_==1)
-	  {
+	  { // contaminates 1-electron region
 	    ElecDiLepControlSample_=0;
 	    mtw =  selectedIDIsoElectrons_MTW->at(0);
 	  }
       }
   
-   
-    // ************************************************************************************************************* 22 June 2015 end****************************************************
-    
-    // check wether a background event according to plane lepton veto gets rejected by the isolated track veto with MT cut applied
+  
+    // to this point we have neglected the isolated track veto
+    // calculate probability that a background event that we did not reject with the standard lepton veto will be rejected by the track veto
     if(isoTracks>=1 && Expectation==1)
       {
 	ExpectationReductionIsoTrack=1;
@@ -305,6 +255,7 @@ void ExpectationMaker::Run(std::string outputFileName, double HTgen_cut)
 
   TFile *outPutFile = new TFile(outputFileName.c_str(), "RECREATE"); 
   outPutFile->cd();
+
   tExpectation_->Write();
   outPutFile->Close();
   cout << "Saved output to " << outputFileName << endl;  
@@ -329,25 +280,20 @@ void ExpectationMaker::resetValues()
   MuDiLepControlSample_=1;
   ElecDiLepControlSample_=1;
 
-  muIsoMatched.clear();
-  muRecoMatched.clear();
-  elecIsoMatched.clear();
-  elecRecoMatched.clear();
   mtw=-1.;
 }
 
 bool ExpectationMaker::FiltersPass()
 {
   bool result=true;
-  //if(useFilterData){
-    //if(!CSCTightHaloFilter) result=false;
-    if(eeBadScFilter!=1) result=false;
-    if(!eeBadSc4Filter) result=false;
-    if(!HBHENoiseFilter) result=false;
-    if(!HBHEIsoNoiseFilter) result=false;
-    //  }
+
+  if(!CSCTightHaloFilter) result=false;
+  if(eeBadScFilter!=1) result=false;
+  if(!eeBadSc4Filter) result=false;
+  if(!HBHENoiseFilter) result=false;
+  if(!HBHEIsoNoiseFilter) result=false;
+
   if(NVtx<=0) result=false;
-  // Do not apply on fastSim samples!
-  // if(!signalScan) if(JetID!=1) result=false;
+  
   return result;
 }

@@ -24,13 +24,18 @@ void SaveFraction(TH1D* Top, TH1D* Bottom, TDirectory* dir);
 void addUncertainties(TH1D* total, std::vector<TH1D*> uncertainties, bool upperUnc);
 
 
-void RunStep4()
+void RunClosureAndFullEstimation()
 {
 
   // General Settings
+
+  // First we'll compare the expected number of background events from MC
+  // with the number predicted by running the full method on the MC
+  // This is the closure test--we'll use it to assign a systematic uncertainty on the data prediction
   TString InputPath_Expectation("Expectation.root");
   TString InputPath_Prediction("Prediction.root");
-  TString InputPath_Prediction_Data("Prediction_data.root"); // Use same path as above if pure MC prediction wanted
+  // here's where we'll put the data
+  TString InputPath_Prediction_Data("Prediction.root"); // Use same path as above if pure MC prediction wanted
   TString OutputPath_Closure("Closure.root");
   TString OutputPath_Prediction("LLPrediction.root");
 
@@ -480,16 +485,16 @@ void RunStep4()
   nb=0;
   double scaleMC = 1.0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
-    printf("Entry %lld\n", jentry);
+    //printf("Entry %lld\n", jentry);
 
     //    if ( jentry%(nentries/100) == 0 && jentry>0 ) { printf("  %9llu out of %9llu (%2lld%%)\n", jentry, nentries, ((100*jentry)/nentries)+1 ) ; fflush(stdout) ; }
     nb = LostLeptonPredictionData->GetEntry(jentry);   nbytes += nb;
-    printf("nb/nbytes: %lld/%lld\n", nb, nbytes);
+    //printf("nb/nbytes: %lld/%lld\n", nb, nbytes);
     if(!useMCForDataTree && InputPath_Prediction_Data != InputPath_Prediction) scaleFactorWeight = 1.0;
-    printf("Weight/scaleFactorWeight/scaleMC: %f/%f/%f\n", Weight, scaleFactorWeight, scaleMC);
+    //    printf("Weight/scaleFactorWeight/scaleMC: %f/%f/%f\n", Weight, scaleFactorWeight, scaleMC);
 
     SearchBin = Bin;
-    printf("Search bin %d\n", SearchBin);
+    //printf("Search bin %d\n", SearchBin);
 
     if(SearchBin > 900) continue;
     if(selectedIDIsoMuonsNum!=1||selectedIDIsoElectronsNum!=0)continue; // single-muon control sample
@@ -558,14 +563,14 @@ void RunStep4()
 
   std::cout<<"--------------------------------------------------------------------------------------------------------------------------\n";
   std::cout<<"\n Summary:"<<std::endl;
-  std::cout<<"TotalExpectationIsoTrack: "<<totalExpIsoTrack<<" +- " << sqrt(totalExpIsoTrackError)<<"\n TotalPredictionIsoTrack (from Data): "<<totalPreIsoTrack<<" +- "<<sqrt(totalPreIsoTrackError)<<std::endl;
-  std::cout<<"TotalExpectation: "<<totalExp<<" +- " << sqrt(totalExpError)<<"\n TotalPrediction (from Data): "<<totalPre<<" +- "<<sqrt(totalPreError)<<std::endl;
-  std::cout<<"MuAccExp: "<<totalExpMuAcc<<"\n MuAccPre (from Data): "<<totalPreMuAcc<<std::endl;
-  std::cout<<"MuRecoExp: "<<totalExpMuReco<<"\n MuRecoPre (from Data): "<<totalPreMuReco<<std::endl;
-  std::cout<<"MuIsoExp: "<<totalExpMuIso<<"\n MuIsoPre (from Data): "<<totalPreMuIso<<std::endl;
-  std::cout<<"ElecAccExp: "<<totalExpElecAcc<<"\n ElecAccPre (from Data): "<<totalPreElecAcc<<std::endl;
-  std::cout<<"ElecRecoExp: "<<totalExpElecReco<<"\n ElecRecoPre: (from Data) "<<totalPreElecReco<<std::endl;
-  std::cout<<"ElecIsoExp: "<<totalExpElecIso<<"\n ElecIsoPre (from Data): "<<totalPreElecIso<<std::endl;
+  std::cout<<"TotalExpectationIsoTrack: "<<totalExpIsoTrack<<" +- " << sqrt(totalExpIsoTrackError)<<"\n TotalPredictionIsoTrack: "<<totalPreIsoTrack<<" +- "<<sqrt(totalPreIsoTrackError)<<std::endl;
+  std::cout<<"TotalExpectation: "<<totalExp<<" +- " << sqrt(totalExpError)<<"\n TotalPrediction: "<<totalPre<<" +- "<<sqrt(totalPreError)<<std::endl;
+  std::cout<<"MuAccExp: "<<totalExpMuAcc<<"\n MuAccPre: "<<totalPreMuAcc<<std::endl;
+  std::cout<<"MuRecoExp: "<<totalExpMuReco<<"\n MuRecoPre: "<<totalPreMuReco<<std::endl;
+  std::cout<<"MuIsoExp: "<<totalExpMuIso<<"\n MuIsoPre: "<<totalPreMuIso<<std::endl;
+  std::cout<<"ElecAccExp: "<<totalExpElecAcc<<"\n ElecAccPre: "<<totalPreElecAcc<<std::endl;
+  std::cout<<"ElecRecoExp: "<<totalExpElecReco<<"\n ElecRecoPre: "<<totalPreElecReco<<std::endl;
+  std::cout<<"ElecIsoExp: "<<totalExpElecIso<<"\n ElecIsoPre: "<<totalPreElecIso<<std::endl;
   std::cout<<"--------------------------------------------------------------------------------------------------------------------------\n";
 
 
@@ -754,73 +759,6 @@ void RunStep4()
 
 	
 
-  SearchBins *SearchBins_ = new SearchBins(true);
-
-  double LLexpErr = 0;
-  double LLexp = totalExp_LL_->IntegralAndError(1, 6, LLexpErr);
-  double LLpreErr = 0;
-  double LLpre = totalPred_LL_->IntegralAndError(1, 6, LLpreErr);
-
-  //printf("Total: & & & & & & & $%3.3f\\pm$%3.3f & $%3.3f\\pm$%3.3f \\\\\n", LLexp, LLexpErr, LLpre, LLpreErr);
-
-  //if(!useMCForDataTree && InputPath_Prediction_Data == InputPath_Prediction) std::cout<<"ATTENTION: Full MC statistics used to do prediction! Only approx. stat. unc. (~sqrt(n)) shown on prediction!"<<std::endl;
-
-  if(InputPath_Prediction_Data != InputPath_Prediction) printf("Bin & NJets & BTags & HT & MHT & CS\\_MC (nEntries) & avg. weight (MC) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & CS\\_data & avg. weight (data) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Prediction (data) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Expectation \\\\\n");
-  else printf("Bin & NJets & BTags & HT & MHT & CS\\_MC (nEntries) & avg. weight (MC) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Prediction (MC) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Expectation \\\\\n");
-
-  for(int i = 1; i<totalPred_LL_->GetNbinsX()+1; ++i){
-
-    //SearchBin (Number, NJets, BTags, HT, MHT)
-    printf("%1.0i & ", i);
-
-    if(SearchBins_->GetSearchBin(i-1)->NJetsmin_<SearchBins_->GetSearchBin(i-1)->NJetsmax_ && SearchBins_->GetSearchBin(i-1)->NJetsmin_>=0){
-      printf("%d-", SearchBins_->GetSearchBin(i-1)->NJetsmin_);
-      if(SearchBins_->GetSearchBin(i-1)->NJetsmax_<9999) printf("%d & ", SearchBins_->GetSearchBin(i-1)->NJetsmax_);
-      else printf("Inf & ");
-    }else{
-      printf("%d & ", SearchBins_->GetSearchBin(i-1)->NJetsmax_);
-    }
-
-    if(SearchBins_->GetSearchBin(i-1)->BTagsmin_<SearchBins_->GetSearchBin(i-1)->BTagsmax_ && SearchBins_->GetSearchBin(i-1)->BTagsmin_>=0){
-      printf("%d-",SearchBins_->GetSearchBin(i-1)->BTagsmin_);
-      if(SearchBins_->GetSearchBin(i-1)->BTagsmax_<9999) printf("%d & ",SearchBins_->GetSearchBin(i-1)->BTagsmax_);
-      else printf("Inf & ");
-    }else{
-      printf("%d & ", SearchBins_->GetSearchBin(i-1)->BTagsmax_);
-    }
-
-    printf("%3.0f-",SearchBins_->GetSearchBin(i-1)->HTmin_);
-    if(SearchBins_->GetSearchBin(i-1)->HTmax_<9999) printf("%3.0f & ",SearchBins_->GetSearchBin(i-1)->HTmax_);
-    else printf("Inf & ");
-
-    printf("%3.0f-",SearchBins_->GetSearchBin(i-1)->MHTmin_);
-    if(SearchBins_->GetSearchBin(i-1)->MHTmax_<9999) printf("%3.0f & ",SearchBins_->GetSearchBin(i-1)->MHTmax_);
-    else printf("Inf & ");
-
-    // CS events (MC)
-    printf("%3.3f & ", totalCS_LL_MC_->GetBinContent(i));
-    //printf("%3.3f (%1.0f) & ", totalCS_LL_MC_->GetBinContent(i), nEvtsCS_LL_MC_->GetBinContent(i));
- 
-    // Average weight per Bin (MC)
-    printf("$%3.3f\\pm%3.3f^{+%3.3f}_{%3.3f}$ & ", avgWeight_LL_MC_->GetBinContent(i), avgWeight_LL_MC_->GetBinError(i), (totalPredNonClosureUp_LL_MC_->GetBinContent(i)-1)*avgWeight_LL_MC_->GetBinContent(i), (totalPredNonClosureDown_LL_MC_->GetBinContent(i)-1)*avgWeight_LL_MC_->GetBinContent(i));
-    
-    // CS events (data)
-    if(InputPath_Prediction_Data != InputPath_Prediction) printf("%1.0f & ", totalCS_LL_->GetBinContent(i));
-
-    // Average weight per Bin (data)
-    //if(InputPath_Prediction_Data != InputPath_Prediction) printf("$%3.3f\\pm%3.3f^{+%3.3f}_{-%3.3f}{}^{+%3.3f}_{-%3.3f}{}^{+%3.3f}_{-%3.3f}$ & ", avgWeight_LL_->GetBinContent(i), avgWeight_LL_->GetBinError(i), avgWeightStatUp_LL_->GetBinContent(i), avgWeightStatDown_LL_->GetBinContent(i), avgWeightSysUp_LL_->GetBinContent(i), avgWeightSysDown_LL_->GetBinContent(i), avgWeightNonClosureUp_LL_->GetBinContent(i), avgWeightNonClosureDown_LL_->GetBinContent(i));
-
-    // Prediction
-    // Correct estimate of stat. uncertainty on prediction only possible if data is used or limited MC statistics (e.g. number of events corresponding to 3fb-1)
-    // For approximation of stat. uncertainty on prediction using full MC statistics use:
-    //if(!useMCForDataTree && InputPath_Prediction_Data == InputPath_Prediction && approxStatUncertainty) if(totalCS_LL_->GetBinContent(i)>0.00001) totalPred_LL_->SetBinError(i, sqrt(totalPred_LL_->GetBinContent(i)*totalPred_LL_->GetBinContent(i)/totalCS_LL_->GetBinContent(i)));
-
-    printf("$%3.3f\\pm%3.3f^{+%3.3f}_{%3.3f}$ & ", totalPred_LL_->GetBinContent(i), totalPred_LL_->GetBinError(i), (totalPredNonClosureUp_LL_->GetBinContent(i)-1)*totalPred_LL_->GetBinContent(i), (totalPredNonClosureDown_LL_->GetBinContent(i)-1)*totalPred_LL_->GetBinContent(i));
-
-    // Expectation
-    printf("$%3.3f\\pm%3.3f$ \\\\\n", totalExp_LL_->GetBinContent(i), totalExp_LL_->GetBinError(i));
-
-  }
 }
 
 
@@ -876,3 +814,73 @@ void addUncertainties(TH1D* total, std::vector<TH1D*> uncertainties, bool upperU
   }
 
 }
+
+// old code for printing search bin information
+
+  // SearchBins *SearchBins_ = new SearchBins(true);
+
+  // double LLexpErr = 0;
+  // double LLexp = totalExp_LL_->IntegralAndError(1, 6, LLexpErr);
+  // double LLpreErr = 0;
+  // double LLpre = totalPred_LL_->IntegralAndError(1, 6, LLpreErr);
+
+  //printf("Total: & & & & & & & $%3.3f\\pm$%3.3f & $%3.3f\\pm$%3.3f \\\\\n", LLexp, LLexpErr, LLpre, LLpreErr);
+
+  //if(!useMCForDataTree && InputPath_Prediction_Data == InputPath_Prediction) std::cout<<"ATTENTION: Full MC statistics used to do prediction! Only approx. stat. unc. (~sqrt(n)) shown on prediction!"<<std::endl;
+
+  // if(InputPath_Prediction_Data != InputPath_Prediction) printf("Bin & NJets & BTags & HT & MHT & CS\\_MC (nEntries) & avg. weight (MC) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & CS\\_data & avg. weight (data) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Prediction (data) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Expectation \\\\\n");
+  // else printf("Bin & NJets & BTags & HT & MHT & CS\\_MC (nEntries) & avg. weight (MC) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Prediction (MC) [$\\pm$ stat. $\\pm$ statEff. $\\pm$ sysEff. $\\pm$ nonClos.] & Expectation \\\\\n");
+
+  // for(int i = 1; i<totalPred_LL_->GetNbinsX()+1; ++i){
+
+  //   //SearchBin (Number, NJets, BTags, HT, MHT)
+  //   printf("%1.0i & ", i);
+
+  //   if(SearchBins_->GetSearchBin(i-1)->NJetsmin_<SearchBins_->GetSearchBin(i-1)->NJetsmax_ && SearchBins_->GetSearchBin(i-1)->NJetsmin_>=0){
+  //     printf("%d-", SearchBins_->GetSearchBin(i-1)->NJetsmin_);
+  //     if(SearchBins_->GetSearchBin(i-1)->NJetsmax_<9999) printf("%d & ", SearchBins_->GetSearchBin(i-1)->NJetsmax_);
+  //     else printf("Inf & ");
+  //   }else{
+  //     printf("%d & ", SearchBins_->GetSearchBin(i-1)->NJetsmax_);
+  //   }
+
+  //   if(SearchBins_->GetSearchBin(i-1)->BTagsmin_<SearchBins_->GetSearchBin(i-1)->BTagsmax_ && SearchBins_->GetSearchBin(i-1)->BTagsmin_>=0){
+  //     printf("%d-",SearchBins_->GetSearchBin(i-1)->BTagsmin_);
+  //     if(SearchBins_->GetSearchBin(i-1)->BTagsmax_<9999) printf("%d & ",SearchBins_->GetSearchBin(i-1)->BTagsmax_);
+  //     else printf("Inf & ");
+  //   }else{
+  //     printf("%d & ", SearchBins_->GetSearchBin(i-1)->BTagsmax_);
+  //   }
+
+  //   printf("%3.0f-",SearchBins_->GetSearchBin(i-1)->HTmin_);
+  //   if(SearchBins_->GetSearchBin(i-1)->HTmax_<9999) printf("%3.0f & ",SearchBins_->GetSearchBin(i-1)->HTmax_);
+  //   else printf("Inf & ");
+
+  //   printf("%3.0f-",SearchBins_->GetSearchBin(i-1)->MHTmin_);
+  //   if(SearchBins_->GetSearchBin(i-1)->MHTmax_<9999) printf("%3.0f & ",SearchBins_->GetSearchBin(i-1)->MHTmax_);
+  //   else printf("Inf & ");
+
+  //   // CS events (MC)
+  //   printf("%3.3f & ", totalCS_LL_MC_->GetBinContent(i));
+  //   //printf("%3.3f (%1.0f) & ", totalCS_LL_MC_->GetBinContent(i), nEvtsCS_LL_MC_->GetBinContent(i));
+ 
+  //   // Average weight per Bin (MC)
+  //   printf("$%3.3f\\pm%3.3f^{+%3.3f}_{%3.3f}$ & ", avgWeight_LL_MC_->GetBinContent(i), avgWeight_LL_MC_->GetBinError(i), (totalPredNonClosureUp_LL_MC_->GetBinContent(i)-1)*avgWeight_LL_MC_->GetBinContent(i), (totalPredNonClosureDown_LL_MC_->GetBinContent(i)-1)*avgWeight_LL_MC_->GetBinContent(i));
+    
+  //   // CS events (data)
+  //   if(InputPath_Prediction_Data != InputPath_Prediction) printf("%1.0f & ", totalCS_LL_->GetBinContent(i));
+
+  //   // Average weight per Bin (data)
+  //   //if(InputPath_Prediction_Data != InputPath_Prediction) printf("$%3.3f\\pm%3.3f^{+%3.3f}_{-%3.3f}{}^{+%3.3f}_{-%3.3f}{}^{+%3.3f}_{-%3.3f}$ & ", avgWeight_LL_->GetBinContent(i), avgWeight_LL_->GetBinError(i), avgWeightStatUp_LL_->GetBinContent(i), avgWeightStatDown_LL_->GetBinContent(i), avgWeightSysUp_LL_->GetBinContent(i), avgWeightSysDown_LL_->GetBinContent(i), avgWeightNonClosureUp_LL_->GetBinContent(i), avgWeightNonClosureDown_LL_->GetBinContent(i));
+
+  //   // Prediction
+  //   // Correct estimate of stat. uncertainty on prediction only possible if data is used or limited MC statistics (e.g. number of events corresponding to 3fb-1)
+  //   // For approximation of stat. uncertainty on prediction using full MC statistics use:
+  //   //if(!useMCForDataTree && InputPath_Prediction_Data == InputPath_Prediction && approxStatUncertainty) if(totalCS_LL_->GetBinContent(i)>0.00001) totalPred_LL_->SetBinError(i, sqrt(totalPred_LL_->GetBinContent(i)*totalPred_LL_->GetBinContent(i)/totalCS_LL_->GetBinContent(i)));
+
+  //   printf("$%3.3f\\pm%3.3f^{+%3.3f}_{%3.3f}$ & ", totalPred_LL_->GetBinContent(i), totalPred_LL_->GetBinError(i), (totalPredNonClosureUp_LL_->GetBinContent(i)-1)*totalPred_LL_->GetBinContent(i), (totalPredNonClosureDown_LL_->GetBinContent(i)-1)*totalPred_LL_->GetBinContent(i));
+
+  //   // Expectation
+  //   printf("$%3.3f\\pm%3.3f$ \\\\\n", totalExp_LL_->GetBinContent(i), totalExp_LL_->GetBinError(i));
+
+  // }
