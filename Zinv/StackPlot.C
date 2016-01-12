@@ -166,7 +166,7 @@ class DataMC{
     tpav_txt->SetTextSize(0.04);
 
     if(Region =="EE" || Region =="EB"){
-    tpav_txt->AddText("H_{T} >800");
+    tpav_txt->AddText("H_{T} >500");
     tpav_txt->AddText("#gamma p_{T} > 100 ");
     tpav_txt->AddText("N_{jets} >=7");
     tpav_txt->AddText("H_{T}^{miss}>200");
