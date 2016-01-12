@@ -4,16 +4,18 @@ void ZGammaRatio(){
     gStyle->SetOptStat(0); 
     TFile *f=new TFile("ControlRegion_Input.root","READ"); 
 
+
+    //here you access Zinv MC and GJets MC histograms needed for double
     TH1F *hZinv =(TH1F*)f->Get("hSearchBins_Zinv");
     TH1F *hGJets =(TH1F*)f->Get("hSearchBins_GJets");
 
-
+    
     TH1F *h_ZgR = (TH1F*)hZinv->Clone("h_ZgR");
     h_ZgR->SetTitle("Z/Gamma Ratio");
     h_ZgR->GetXaxis()->SetTitle("bin Number");
     h_ZgR->GetYaxis()->SetTitle("(Z#rightarrow #nu#nu/#gamma +jets)_{MC} ");
     h_ZgR->GetYaxis()->SetTitleOffset(0.7);
-    h_ZgR->Divide(hGJets);
+    h_ZgR->Divide(hGJets);//divide the histograms to get the ZgammaRatio
 
 
     TPaveText *tpav1 = new TPaveText(0.5956522,0.447818,0.829097,0.8070332,"brNDC");
@@ -40,13 +42,15 @@ void ZGammaRatio(){
 
 
 
+    //here you make a bunch of arrays to plot the Zgamma Ratio with corresponding uncertainties
     int nBins=6;
-    double ZgRwSF[nBins];
-    double ZgRwSF_sys_ErrUp[nBins];
-    double ZgRwSF_sys_ErrLow[nBins];
-    double ZgRwSF_stat_Err[nBins];
-    double XErrLow[nBins];
-    double XErrUp[nBins];
+    double ZgRwSF[nBins];//ZgammaRatio with Data/MC SF applied
+    double ZgRwSF_sys_ErrUp[nBins];//systematic error up on ZgammaRatio with Data/MC SF applied
+    double ZgRwSF_sys_ErrLow[nBins];//systematic error low on ZgammaRatio with Data/MC SF applied
+
+    double ZgRwSF_stat_Err[nBins];//stat error on Zgamma ratio with SF applied 
+    double XErrLow[nBins];//these are just the bin sizes
+    double XErrUp[nBins];//
     double binNumber[nBins];
 
     TFile *fZgR=new TFile("ZGammaRatio.root","RECREATE");
@@ -60,17 +64,19 @@ void ZGammaRatio(){
    for(int ibin=1;ibin<(nBins+1);ibin++){//loop over bin error calculation
 
 
-       double SF=0.99;
-       double SFup=1.04;
-       double SFlow=0.94;
-       double ZgR_woSF=h_ZgR->GetBinContent(ibin);
-       double ZgRcentral=h_ZgR->GetBinContent(ibin)/SF;
-       double ZgRup=h_ZgR->GetBinContent(ibin)/SFup;
-       double ZgRlow=h_ZgR->GetBinContent(ibin)/SFlow;
+       double SF=0.99;//This is the Data/MC scale factor for ID and Isolation with uncertainty 0.05
+       double SFup=1.04;//SF one sigma up 0.99+0.05
+       double SFlow=0.94; //SF one sigma down 0.99-0.05
+       double ZgR_woSF=h_ZgR->GetBinContent(ibin);//
+       double ZgRcentral=h_ZgR->GetBinContent(ibin)/SF;//central value of ZgammaRatio with Data/MC SF applied  
+       double ZgRup=h_ZgR->GetBinContent(ibin)/SFup;//Zgamma Ratio scaled with Data/MC SFup
+       double ZgRlow=h_ZgR->GetBinContent(ibin)/SFlow;//Zgamma Ratio scaled with Data/MC SFlow
 
-       double ZgRsysErrup=fabs(ZgRcentral-ZgRlow);
-       double ZgRsysErrlow=fabs(ZgRcentral-ZgRup);
-       double ZgRstatErr=h_ZgR->GetBinError(ibin)/SF;
+      
+
+       double ZgRsysErrup=fabs(ZgRcentral-ZgRlow);//systematic up error on the ZgRcentral
+       double ZgRsysErrlow=fabs(ZgRcentral-ZgRup);//systematic low error on the ZgRcentral
+       double ZgRstatErr=h_ZgR->GetBinError(ibin)/SF;//statistical error on ZgRcentral
 
 
        cout<<"Bin Num "<<ibin<<":  "<<"ZgR_WO_SF: "<<ZgR_woSF<<"    ZgR_W_SF: "<<ZgRcentral<<endl;
@@ -100,6 +106,7 @@ void ZGammaRatio(){
      c_ZgRwSF->cd();
 
 
+    //see that the central value in two TGraphAssymetric errors are same .
      TGraphAsymmErrors *gr_ZgRwSFsys = new TGraphAsymmErrors(nBins,binNumber,ZgRwSF,XErrLow,XErrUp,ZgRwSF_sys_ErrLow,ZgRwSF_sys_ErrUp);
      gr_ZgRwSFsys->SetTitle("ZgammaRatio");
      gr_ZgRwSFsys->SetMarkerColor(4);
