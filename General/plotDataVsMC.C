@@ -81,6 +81,7 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
   // Draw
   TCanvas* canNJets = new TCanvas("canNJets","NJets",canSize,canSize);
   canNJets->cd();
+  hBkgNJets->SetMaximum(10000.);
   hBkgNJets->Draw("HIST");
   hDataNJets->Draw("PE1same");
   leg->Draw("same");
@@ -108,19 +109,34 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
 
   // Print event yields
   std::cout << "Event yields" << std::endl;
-  std::cout << "Selection\tData\t\t\t" << std::flush;
+  std::cout << "Selection\t" << std::flush;
+  std::string str = Sample::toTString(ids[1]).Data();
+  printf(" %-20s:",str.c_str());
   for(int s = 0; s < kNBkgSamples; ++s) {
-    std::cout << Sample::toTString(ids[s]) << " \t\t\t" << std::flush;
+    //std::cout << Sample::toTString(ids[s]) << " \t\t\t" << std::flush;
+    str = Sample::toTString(ids[s]).Data();
+    printf(" %-20s:",str.c_str());
   }
+  printf(" Total               :");
   std::cout << std::endl;
+  double BkgTotal[6]={0.,0.,0.,0.,0.,0.};
+  double BkgTotalError[6]={0.,0.,0.,0.,0.,0.};
   for(int bin = 1; bin <= hDataYields->GetNbinsX(); ++bin) {
     std::cout << hDataYields->GetXaxis()->GetBinLabel(bin) << " : \t" << std::flush;
-    std::cout << hDataYields->GetBinContent(bin) << " +/- " << std::flush;
-    std::cout << hDataYields->GetBinError(bin) << "  \t" << std::flush;
+    printf("%8.1f +/- ",hDataYields->GetBinContent(bin));
+    printf("%7.3f :",hDataYields->GetBinError(bin));
+    //std::cout << hDataYields->GetBinContent(bin) << " +/- " << std::flush;
+    //std::cout << hDataYields->GetBinError(bin) << "  \t" << std::flush;
     for(int s = 0; s < kNBkgSamples; ++s) {
-      std::cout << hBkgYields[s]->GetBinContent(bin) << " +/- " << std::flush;
-      std::cout << hBkgYields[s]->GetBinError(bin) << "  \t" << std::flush;
+      printf("%8.3f +/- ",hBkgYields[s]->GetBinContent(bin));
+      printf("%7.3f :",hBkgYields[s]->GetBinError(bin));
+      //std::cout << hBkgYields[s]->GetBinContent(bin) << " +/- " << std::flush;
+      //std::cout << hBkgYields[s]->GetBinError(bin) << "  \t" << std::flush;
+      BkgTotal[bin-1]      += hBkgYields[s]->GetBinContent(bin);
+      BkgTotalError[bin-1] += pow(hBkgYields[s]->GetBinError(bin),2);
     }
+    printf("%8.3f +/- ",BkgTotal[bin-1]);
+    printf("%7.3f :",sqrt(BkgTotalError[bin-1]));
     std::cout << std::endl;
   }
 }

@@ -33,11 +33,11 @@
  */
 
 //                                    minAbsEta, maxAbsEta, minPt, maxPt
-static const double      pt30Arr[] = {   -1,        -1,      30,    -1  };
+static const double pt30Eta50Arr[] = {   -1,       5.0,      30,    -1  };
 static const double pt30Eta24Arr[] = {   -1,       2.4,      30,    -1  };
 static const double      dphiArr[] = {   -1,       2.4,      30,    -1  };
 
-static const double expectedLumi = 2200; // in pb-1 --> equivalent to 2.2 fb-1
+static const double expectedLumi = 2262; // in pb-1 --> equivalent to 2.3 fb-1
 
 TStopwatch timer;
 
@@ -58,7 +58,7 @@ public:
     int nJets_CUT, vtxSize, npv, nm1, n0, np1, bestTopJetIdx, pickedRemainingCombfatJetIdx;
     unsigned int remainPassCSVS;
     std::vector<double> *muonsCharge, *muonsMtw, *muonsRelIso, *elesCharge, *elesMtw, *elesRelIso;
-    std::vector<double> *muonsMiniIso, *elesMiniIso; // KH added    
+    std::vector<double> *muonsMiniIso, *elesMiniIso;
     std::vector<double> *recoJetsBtag_0, *trksForIsoVeto_charge, *trksForIsoVeto_dz;
     std::vector<double> *loose_isoTrks_charge, *loose_isoTrks_dz;
     std::vector<double> *loose_isoTrks_iso, *loose_isoTrks_mtw;
@@ -168,8 +168,8 @@ public:
     vector<double> calcMHTxy(const vector<TLorentzVector> &inputJets, const double *jetCutsArr);
 
     double calcHT(){ return calcHT((*jetsLVec), pt30Eta24Arr); }
-    double calcMHT(){ return calcMHT((*jetsLVec), pt30Arr); }
-    vector<double> calcMHTxy(){ return calcMHTxy((*jetsLVec), pt30Arr); }
+    double calcMHT(){ return calcMHT((*jetsLVec), pt30Eta50Arr); }
+    vector<double> calcMHTxy(){ return calcMHTxy((*jetsLVec), pt30Eta50Arr); }
 
     int countJets(const vector<TLorentzVector> &inputJets, const double *jetCutsArr);
     int countJets(){ return countJets((*jetsLVec), pt30Eta24Arr); }
@@ -262,16 +262,6 @@ void NTupleReader::populateBranchList()
     branchMap_["HT"] = &HT;
     branchMap_["NJets"] = &NJets;
     branchMap_["genHT"] = &genHT;
-
-    //branchMap_["muonsRelIso"]  = &muonsRelIso;
-    //branchMap_["elesRelIso"]  = &elesRelIso;
-    //branchMap_["genDecayIdxVec"]  = &genDecayIdxVec;
-    //branchMap_["genDecayPdgIdVec"]  = &genDecayPdgIdVec;
-    //branchMap_["genDecayMomIdxVec"]  = &genDecayMomIdxVec;
-    //branchMap_["W_emuVec"]  = &W_emuVec;
-    //branchMap_["W_tau_emuVec"]  = &W_tau_emuVec;
-    //branchMap_["W_tau_prongsVec"]  = &W_tau_prongsVec;
-    //branchMap_["genDecayLVec"]  = &genDecayLVec;
 
 }
 

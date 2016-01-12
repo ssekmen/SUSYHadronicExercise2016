@@ -116,11 +116,16 @@ void general2(unsigned int id, int nEvts = -1) {
         if( nevtProcessed == 1 || nevtProcessed == toProcessedEvts || nevtProcessed%(toProcessedEvts/10) ==0 ) std::cout<<"  processing the "<<nevtProcessed<<"th event"<<std::endl;
 
     // Apply the event cleaning
-	if (!(ntper.vtxSize>0)) continue;
-	if (!(ntper.eeBadScFilter)) continue;
-	if (!(ntper.HBHENoiseFilter)) continue;
-	if (!(ntper.HBHEIsoNoiseFilter)) continue;
-	if (!(ntper.JetID)) continue;
+	if (id<31 || id>37){ // if not fastsim
+	  if (!(ntper.vtxSize>0)) continue;
+	  if (!(ntper.eeBadScFilter)) continue;
+	  if (!(ntper.HBHENoiseFilter)) continue;
+	  if (!(ntper.HBHEIsoNoiseFilter)) continue;
+	  if (!(ntper.JetID)) continue;
+	} 
+	if (id==1) {         // if data
+	  if (!(ntper.CSCTightHaloFilter)) continue;
+	}
 
     // Apply lepton vetoes
         int selMuons = 0;
@@ -144,8 +149,12 @@ void general2(unsigned int id, int nEvts = -1) {
 
         double weight = 1.0;
 	if (id!=1){  // no scaling for data
-	  weight *= ntper.evtWeight;
-	  //weight *= scaleToLumi;
+	  weight *= scaleToLumi;
+	  /*
+	  if (nevtProcessed==1 && (id==11 || id==12 || id==13 || id==14 || id==21 || id==22 )){
+	    printf("scaleToLumi (computed): %10.5e, (from ntuple): %10.5e\n",scaleToLumi,ntper.evtWeight*expectedLumi);
+	  }
+	  */
 	}
 
     // Apply the NJets baseline-cut

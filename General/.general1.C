@@ -37,10 +37,13 @@ void general1(unsigned int id, int nEvts = -1) {
   TH1* hHt = new TH1D("hHt",";H_{T} [GeV]",30,0,3000);
   hHt->Sumw2();
   hHt->GetXaxis()->SetNdivisions(505);
-  //>>> ADD LINES for GEN-LEVEL HT HISTOGRAMS HERE
   TH1* hMht = new TH1D("hMht",";#slash{H}_{T} [GeV]",40,0,1200);
   hMht->Sumw2();
   hMht->GetXaxis()->SetNdivisions(505);
+  //>>> ADD LINES for GEN-LEVEL HT HISTOGRAMS HERE
+  TH1* hGenHt = new TH1D("hGenHt",";Generator-level H_{T} [GeV]",30,0,3000);
+  hGenHt->Sumw2();
+  hGenHt->GetXaxis()->SetNdivisions(505);
   std::vector<TH1*> hJetPt(4,NULL);
   std::vector<TH1*> hJetPhi(4,NULL);
   std::vector<TH1*> hJetEta(4,NULL);
@@ -156,6 +159,32 @@ void general1(unsigned int id, int nEvts = -1) {
 	std::vector<double> deltaPhis(4,9999.);
 
 	//>>> PLACE DELTA PHI COMPUTATION HERE
+	
+	/*
+	//KH will remove below before the actual exercise
+	//KH-------------
+        // Loop over reco jets: remember, they are ordered in pt!        
+	unsigned int nMhtJets = 0;
+        for(unsigned int jetIdx = 0; jetIdx < ntper.jetsLVec->size(); ++jetIdx) {
+
+          // Select MHT jets
+          if( ntper.jetsLVec->at(jetIdx).Pt() > 30 && std::abs(ntper.jetsLVec->at(jetIdx).Eta() ) < 2.4 ) {
+
+            // Compute delta phi (per convention in sector between -Pi and Pi)
+            // between this jet and the MHT vector
+            const double deltaPhi = TVector2::Phi_mpi_pi(ntper.jetsLVec->at(jetIdx).Phi() - phiMHT );
+            // Store deltaPhi
+            deltaPhis.at(nMhtJets) = std::fabs(deltaPhi);
+
+            // Increase counter for MHT jets
+            ++nMhtJets;
+            // DeltaPhi cut only for first three jets
+            // Leave jet loop if the first 3 MHT jets tested
+            if( nMhtJets == 4 ) break;
+          }   // End of MHT-jet criterion
+        } // End of loop over reco jets
+	//KH-------------
+	*/
 
 	// Actually, the deltaPhi(MHT,jet{1,2,3,4}) variables are already stored in ntuples, 
 	// so we can cross-check your deltaPhi computations
@@ -179,6 +208,7 @@ void general1(unsigned int id, int nEvts = -1) {
         hNJets->Fill(selNJet, weight);
         hHt->Fill(selHT, weight);
 	//>>> ADD LINES for GEN-LEVEL HT HISTOGRAMS HERE
+        hGenHt->Fill(ntper.genHT, weight);
         hMht->Fill(selMHT, weight);
         for(unsigned int ih = 0; ih < hJetPt.size(); ++ih) {
            if( ih == ntper.jetsLVec->size() ) break;
@@ -201,8 +231,9 @@ void general1(unsigned int id, int nEvts = -1) {
   TFile outFile("General_"+Sample::toTString(id)+".root","RECREATE");
   hNJets->Write();
   hHt->Write();
-  //>>> ADD LINES for GEN-LEVEL HT HISTOGRAMS HERE
   hMht->Write();
+  //>>> ADD LINES for GEN-LEVEL HT HISTOGRAMS HERE
+  hGenHt->Write();
   for(unsigned int i = 0; i < hJetPt.size(); ++i) {
     hJetPt.at(i)->Write();
     hJetEta.at(i)->Write();
