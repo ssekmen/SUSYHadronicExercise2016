@@ -171,13 +171,10 @@ TString Sample::toTString(unsigned int id) {
   else if( id == 14  ) str += "QCD";
   else if( id == 21  ) str += "T1tttt_1500_100";
   else if( id == 22  ) str += "T1tttt_1200_800";
-  else if( id == 31  ) str += "T1tttt_1200_100_fastsim";
-  else if( id == 32  ) str += "T1tttt_1300_100_fastsim";
-  else if( id == 33  ) str += "T1tttt_1400_100_fastsim";
-  else if( id == 34  ) str += "T1tttt_1500_100_fastsim";
-  else if( id == 35  ) str += "T1tttt_1600_100_fastsim";
-  else if( id == 36  ) str += "T1tttt_1700_100_fastsim";
-  else if( id == 37  ) str += "T1tttt_1800_100_fastsim";
+  else if( id == 31  ) str += "T1tttt_1300_100_fastsim";
+  else if( id == 32  ) str += "T1tttt_1400_100_fastsim";
+  else if( id == 33  ) str += "T1tttt_1500_100_fastsim";
+  else if( id == 34  ) str += "T1tttt_1600_100_fastsim";
   else if( id == 111  ) str += "WJets_HT-100to200";
   else if( id == 112  ) str += "WJets_HT-200to400";
   else if( id == 113  ) str += "WJets_HT-400to600";
