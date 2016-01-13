@@ -51,6 +51,7 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
   THStack* hBkgNJets = new THStack("hBkgNJets",";N(jets);Events");
   THStack* hBkgHt = new THStack("hBkgHt",";H_{T} [GeV];Events");
   THStack* hBkgMht = new THStack("hBkgMht",";#slash{H}_{T} [GeV];Events");
+  THStack* hBkgYieldsStack = new THStack("hBkgYieldsStack",";Yields at baseline and search bins");
   TLegend* leg = new TLegend(0.6,(0.89-0.05*(kNBkgSamples+1)),0.9,0.89);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
@@ -64,18 +65,20 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
     TH1* hNJets = HistReader::get(fileName,"hNJets");
     TH1* hHt = HistReader::get(fileName,"hHt");
     TH1* hMht = HistReader::get(fileName,"hMht");
+    TH1* hYields = HistReader::get(fileName,"hYields");
     hBkgYields[s] = HistReader::get(fileName,"hYields");
     // Set style and color
     setStyle(hNJets,ids[s]);
     setStyle(hHt,ids[s]);
     setStyle(hMht,ids[s]);
-    setStyle(hBkgYields[s],ids[s]);
+    setStyle(hYields,ids[s]);
     // Add legend entry
     leg->AddEntry(hHt,Sample::label(ids[s]),"F");
     // Add histogram to stack
     hBkgNJets->Add(hNJets);
     hBkgHt->Add(hHt);
     hBkgMht->Add(hMht);
+    hBkgYieldsStack->Add(hYields);
   } // End of loop over samples
 
   // Draw
@@ -107,13 +110,21 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
   gPad->RedrawAxis();
   canMht->SaveAs("hDataVsMC_Mht."+graphicsFormat);
 
+  TCanvas* canYields = new TCanvas("canYields","Yields",canSize,canSize);
+  canYields->cd();
+  hBkgYieldsStack->Draw("HIST");
+  hDataYields->Draw("PE1same");
+  leg->Draw("same");
+  canYields->SetLogy();
+  gPad->RedrawAxis();
+  canYields->SaveAs("hDataVsMC_Yields."+graphicsFormat);
+
   // Print event yields
   std::cout << "Event yields" << std::endl;
   std::cout << "Selection\t" << std::flush;
   std::string str = Sample::toTString(ids[1]).Data();
   printf(" %-20s:",str.c_str());
   for(int s = 0; s < kNBkgSamples; ++s) {
-    //std::cout << Sample::toTString(ids[s]) << " \t\t\t" << std::flush;
     str = Sample::toTString(ids[s]).Data();
     printf(" %-20s:",str.c_str());
   }
@@ -125,13 +136,9 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
     std::cout << hDataYields->GetXaxis()->GetBinLabel(bin) << " : \t" << std::flush;
     printf("%8.1f +/- ",hDataYields->GetBinContent(bin));
     printf("%7.3f :",hDataYields->GetBinError(bin));
-    //std::cout << hDataYields->GetBinContent(bin) << " +/- " << std::flush;
-    //std::cout << hDataYields->GetBinError(bin) << "  \t" << std::flush;
     for(int s = 0; s < kNBkgSamples; ++s) {
       printf("%8.3f +/- ",hBkgYields[s]->GetBinContent(bin));
       printf("%7.3f :",hBkgYields[s]->GetBinError(bin));
-      //std::cout << hBkgYields[s]->GetBinContent(bin) << " +/- " << std::flush;
-      //std::cout << hBkgYields[s]->GetBinError(bin) << "  \t" << std::flush;
       BkgTotal[bin-1]      += hBkgYields[s]->GetBinContent(bin);
       BkgTotalError[bin-1] += pow(hBkgYields[s]->GetBinError(bin),2);
     }
