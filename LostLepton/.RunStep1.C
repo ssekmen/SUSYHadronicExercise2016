@@ -24,7 +24,12 @@ void RunStep1() {
   mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-800to1200.root");
   mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-1200to2500.root");
   mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-2500toInf.root");
-  // anything else?
+  // single top
+  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_s-channel.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_t-channel_top.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_t-channel_antitop.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_tW_top.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_tW_antitop.root");
  
   ExpectationMaker* exp_mkr = new ExpectationMaker(mc);
   exp_mkr->Run("Expectation_1.root");

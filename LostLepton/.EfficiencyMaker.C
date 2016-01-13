@@ -107,7 +107,8 @@ void EfficiencyMaker::Run(std::string outputFileName)
     if(muReco==2) MuRecoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,true); // muon reconstructed
     else if(muReco==0) MuRecoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,false); // muon in acceptance, but not reconstructed
     // isolation
-
+    if(muIso==2) MuIsoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,true); // muon isolated
+    else if(muIso==0) MuIsoActivityPT_->Fill(GenMu_MT2Activity->at(0),GenMus->at(0).Pt(),Weight,false); // muon in acceptance and recosntructed, but not isolated
 
 
     // calculate electron efficiencies
@@ -123,7 +124,8 @@ void EfficiencyMaker::Run(std::string outputFileName)
     if(elecReco==2) ElecRecoActivityPT_->Fill(GenElec_MT2Activity->at(0),GenEls->at(0).Pt(),Weight,true);
     else if(elecReco==0)  ElecRecoActivityPT_->Fill(GenElec_MT2Activity->at(0),GenEls->at(0).Pt(),Weight,false);
     // isolation
-
+    if(elecIso==2) ElecIsoActivityPT_->Fill(GenElec_MT2Activity->at(0),GenEls->at(0).Pt(),Weight,true);
+    else if(elecIso==0)  ElecIsoActivityPT_->Fill(GenElec_MT2Activity->at(0),GenEls->at(0).Pt(),Weight,false);
 
     // mt cut, dilepton contribution (just needed for muons)
     if(muIso==2 && MTW < 100) MuMTWHTNJets_->Fill(HT, NJets, Weight, true);
