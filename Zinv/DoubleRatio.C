@@ -1,4 +1,3 @@
-#include "SetStyle.C"
 
 void DoubleRatio(){
 
@@ -23,18 +22,44 @@ void DoubleRatio(){
     hDYmData->GetYaxis()->SetTitleOffset(0.70);
 
 
-    hGJData->Divide(hGJ);
+     hGJData->Divide(hGJ);
 
-    hDYmData->Divide(hDYm);
-
-  // TEfficiency *pEff = new TEfficiency(hDYmData,hGJData);
-
-    hDYmData->Divide(hGJData);
+     hDYmData->Divide(hDYm);
 
 
-    hDYmData->Draw("E");
+     hDYmData->Divide(hGJData);
 
-    
+
+     hDYmData->Draw("E");
+
+    double DR=0;
+    double DRerr=0;
+
+
+    //here we are avergaing over 4 bins to get the double ratio. 4 bins because there is no stat beyond first 4 bins in the histogram.
+    for(int i=1;i<=4;i++){
+
+      DR=DR+hDYmData->GetBinContent(i);
+   
+      DRerr= DRerr+ hDYmData->GetBinError(i)*hDYmData->GetBinError(i);;
+     
+
+
+          }  
+  
+
+    double DoubleRatio=DR/4;
+    double DoubleRatioErr=sqrt(DRerr);
+
+    double RelativeErr=DoubleRatioErr/DoubleRatio;
+
+    cout<<"Double Ratio: "<<DoubleRatio<<endl;
+    cout<<"Error on Double ratio: "<<DoubleRatioErr<<endl;
+
+    cout<<"Relative error on double ratio: "<<RelativeErr<<endl;
+
+
+
 
 
 
