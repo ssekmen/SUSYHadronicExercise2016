@@ -280,6 +280,7 @@ void RunClosureAndFullEstimation()
 
     // total expectation
     if(SearchBin > 900) continue;
+    if (HT<800&&MHT>750) continue; // to match the standard analysis
     if (NJets<7 || BTags<2) continue; // in case we didn't cut on this earlier
     scaledWeight = Weight * scaleFactorWeight;
 
@@ -402,6 +403,7 @@ void RunClosureAndFullEstimation()
 
     SearchBin = Bin;
     if(SearchBin > 900) continue;
+    if (HT<800&&MHT>750) continue; // to match the standard analysis
     if (NJets<7 || BTags<2) continue; // in case we didn't cut on this earlier
 
     if(selectedIDIsoMuonsNum!=1||selectedIDIsoElectronsNum!=0)continue; // single-muon control sample
@@ -497,6 +499,7 @@ void RunClosureAndFullEstimation()
     //printf("Search bin %d\n", SearchBin);
 
     if(SearchBin > 900) continue;
+    if (HT<800&&MHT>750) continue; // to match the standard analysis
     if(selectedIDIsoMuonsNum!=1||selectedIDIsoElectronsNum!=0)continue; // single-muon control sample
     if (NJets<7 || BTags<2) continue; // in case we didn't cut on these earlier
     if(MTW>100)continue;
