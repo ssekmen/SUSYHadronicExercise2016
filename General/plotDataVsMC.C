@@ -122,7 +122,7 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
   // Print event yields
   std::cout << "Event yields" << std::endl;
   std::cout << "Selection\t" << std::flush;
-  std::string str = Sample::toTString(ids[1]).Data();
+  std::string str = Sample::toTString(1).Data();
   printf(" %-20s:",str.c_str());
   for(int s = 0; s < kNBkgSamples; ++s) {
     str = Sample::toTString(ids[s]).Data();
