@@ -51,7 +51,7 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
   THStack* hBkgNJets = new THStack("hBkgNJets",";N(jets);Events");
   THStack* hBkgHt = new THStack("hBkgHt",";H_{T} [GeV];Events");
   THStack* hBkgMht = new THStack("hBkgMht",";#slash{H}_{T} [GeV];Events");
-  THStack* hBkgYieldsStack = new THStack("hBkgYieldsStack",";Yields at baseline and search bins");
+  THStack* hBkgYieldsStack = new THStack("hBkgYieldsStack",";;Events");
   TLegend* leg = new TLegend(0.6,(0.89-0.05*(kNBkgSamples+1)),0.9,0.89);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
