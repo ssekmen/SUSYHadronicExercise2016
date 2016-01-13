@@ -216,15 +216,8 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
     // sum the threee contributions
     muTotalWeight_ = muIsoWeight_ + muRecoWeight_ + muAccWeight_;
     
-    // calculate the "muon term" in the electron efficiency expressions -- what does it represent
-    totalMuons_ = mtwDiLepCorrectedWeight_ / ( muIsoEff_ * muRecoEff_ * muAccEff_);
-    // use it to calculate the electron efficiencies
-    elecAccWeight_ = totalMuons_ * (1 - elecAccEff_);
-    elecRecoWeight_ = totalMuons_ * (elecAccEff_) * (1-elecRecoEff_);
-    elecIsoWeight_ = totalMuons_ * (elecAccEff_) * (elecRecoEff_) * (1-elecIsoEff_);
-    // why did we calculate these in the reverse order from what we used for the muons
-    elecTotalWeight_ = elecIsoWeight_ + elecRecoWeight_ + elecAccWeight_;
-    totalElectrons_ = mtwDiLepCorrectedWeight_ / ( elecIsoEff_ * elecRecoEff_ * elecAccEff_);
+    // calculate the electron contribution weight using the electron efficiencies and the muon weights
+
 
     // the the total mu+e contribution to the lost-lepton background
     totalWeight_ = elecTotalWeight_ + muTotalWeight_;

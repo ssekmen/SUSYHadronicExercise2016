@@ -1,5 +1,4 @@
 // Step 4: Compare the expected and predicted number of events from MC to calculate a non-closure systematic, then run the full prediction on data
-
 #include <TChain.h>
 #include <TROOT.h>
 #include <TFile.h>
@@ -35,7 +34,7 @@ void RunClosureAndFullEstimation()
   TString InputPath_Expectation("Expectation.root");
   TString InputPath_Prediction("Prediction.root");
   // here's where we'll put the data
-  TString InputPath_Prediction_Data("Prediction.root"); // Use same path as above if pure MC prediction wanted
+  TString InputPath_Prediction_Data("Prediction_data.root"); // Use same path as above if pure MC prediction wanted
   TString OutputPath_Closure("Closure.root");
   TString OutputPath_Prediction("LLPrediction.root");
 
