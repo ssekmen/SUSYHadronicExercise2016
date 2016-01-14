@@ -4,7 +4,7 @@
 #include "../../Utils/HistReader.h"
 
 // === Main Function ===================================================
-void plotGluinoXsecVsLimits(const TString &graphicsFormat = "png"){
+void plotGluinoXsecVsLimits(const TString &graphicsFormat = "pdf"){
 
   StyleMatters::init();
   const int canSize = 600;
@@ -97,6 +97,7 @@ void plotGluinoXsecVsLimits(const TString &graphicsFormat = "png"){
   TLatex Tl; Tl.SetTextFont(43); Tl.SetTextSize(25);
   Tl.DrawText(1260., .13, "T1tttt:");
   Tl.DrawLatex(1280., .10,"pp#rightarrow#tilde{g}#tilde{g}, #tilde{g}#rightarrow t#bar{t}#tilde{#chi}_{1}^{0}");
+  Tl.DrawLatex(1280., .075,"m_{#tilde{#chi}_{1}^{0}} = 100 GeV");
   Tl.SetTextSize(30);
   Tl.DrawLatex(1450., .22, "13 TeV, 2.3 fb^{-1}");
 
