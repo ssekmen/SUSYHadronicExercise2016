@@ -13,7 +13,7 @@ rate 1.3388 0.000 0.00843 0 0.001
 lumi                  lnN  1.04 - - - - lumi affects signal
 signal_statbin6       lnN  1.015 - - - -
 signal_systematic     lnN  1.1 - - - - approximate 10 percent for ISR,JEC,pileup
-lost_statbin6         gmN  0  - 0.5 - - -
+lost_statbin6         gmN  0  - 0.559756 - - -
 lost_sys6             lnN  - 0.818793/1.1812  - - -
 hadtau_statbin6       lnN  - - 0.196471/134.739 - -
 hadtau_sys6           lnN  - - 1/1.23412 - -
