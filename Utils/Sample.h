@@ -15,6 +15,13 @@
 // Author: Matthias Schroeder
 //         matthias.schroeder@AT@desy.de
 //         November 2013
+
+// colors from 2015 RA2 PAS
+TColor qcd_gold(3001, 255/255.,200/255.,47/255);
+TColor znn_red(3002, 255/255.,0/255.,43/255.);
+TColor lost_lep_dusk_blue(3006, 105/255.,166/255., 202/255.);
+TColor had_tau_grayed_jade(3007, 133/255.,189/255., 164/255.);
+
 class Sample {
 public:
   // Compact sample name without spaces, i.e. suitable
@@ -156,6 +163,11 @@ TString Sample::label(unsigned int id) {
   else if( id == 116 ) label += "W(l#nu)+Jets HT=[1200,2500] GeV";
   else if( id == 117 ) label += "W(l#nu)+Jets HT>=2500 GeV";
 
+  else if( id == 121 ) label += "QCD multijets";
+  else if( id == 122 ) label += "Z(#nu#bar{#nu})+jets";
+  else if( id == 123 ) label += "Lost-lepton";
+  else if( id == 124 ) label += "Hadronic-tau";
+
   return label;
 }
 
@@ -183,6 +195,11 @@ TString Sample::toTString(unsigned int id) {
   else if( id == 116  ) str += "WJets_HT-1200to2500";
   else if( id == 117  ) str += "WJets_HT-2500toInf";
 
+  else if( id == 121 ) str += "QCD";
+  else if( id == 122 ) str += "Znn";
+  else if( id == 123 ) str += "LostLep";
+  else if( id == 124 ) str += "HadTau";
+
   return str;
 }
 
@@ -206,6 +223,11 @@ int Sample::color(unsigned int id) {
   else if( id == 116 ) color = kBlue;
   else if( id == 117 ) color = kMagenta;
 
+  else if( id == 121 ) color = 3001;
+  else if( id == 122 ) color = 3002;
+  else if( id == 123 ) color = 3006;
+  else if( id == 124 ) color = 3007;
+
   return color;
 }
   
@@ -215,7 +237,8 @@ void Sample::checkId(unsigned int id) {
       && !(id >=  11 && id <= 14) 
       && !(id >=  21 && id <= 22) 
       && !(id >=  31 && id <= 34) 
-      && !(id >= 111 && id <= 117) 
+      && !(id >= 111 && id <= 117)
+      && !(id >= 121 && id <= 124)
       ) {
     std::cerr << "\n\nERROR invalid sample id " << id << std::endl;
     throw std::exception();

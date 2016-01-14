@@ -3,6 +3,10 @@
 
 #include "TCanvas.h"
 #include "TStyle.h"
+#include "TLegend.h"
+#include "THStack.h"
+#include "TLatex.h"
+#include "TLine.h"
 
 
 // Collection of gStyle settings.
