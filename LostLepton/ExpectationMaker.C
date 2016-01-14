@@ -170,6 +170,54 @@ void ExpectationMaker::Run(std::string outputFileName, double HTgen_cut)
       } 
 
     // ***** 2.2.1.2: Now compute variables useful for calculating electron efficiencies *****
+   // now compute variables useful for calculating electron efficiencies
+    // Expectation can be 1 (lost lepton event), 2 (lepton passes all cuts, not lost)
+    // elecAcc, elecReco, elecIso can be 0 (electron fails cut), 2 (electron passed cut), or 1 (no relevant electron in event)
+    if( GenMuNum_==0 && GenElecNum_==1 )
+      { // true single-electron events
+	if ( GenEls->at(0).Pt() < minElecPt_ || std::abs(GenEls->at(0).Eta()) > maxElecEta_) // is the electron in kinematic and geometric acceptance?
+	  { // not in acceptance -- electron is lost
+	    elecAcc=0;
+	    Expectation=1;
+	    // efficiency studies TH1 and so on
+	  }
+	else
+	  { // electron is in acceptance, now check if it was recosntructed and ID'd
+	    elecAcc=2;
+	    bool RecoNotMatched=true;
+	    for (UShort_t i=0; i<selectedIDElectronsNum_; i++) // loop over the RECO electrons, try to find one matching the gen electron
+	      {
+		// deltaR = sqrt(dEta*dEta + dPhi*dPhi)
+		if(deltaR(GenEls->at(0).Eta(),GenEls->at(0).Phi(),selectedIDElectrons->at(i).Eta(),selectedIDElectrons->at(i).Phi())<maxDeltaRGenToRecoElec_ && std::abs(GenEls->at(0).Pt()-selectedIDElectrons->at(i).Pt())/GenEls->at(0).Pt() <maxDiffPtGenToRecoElec_)
+		  { // found a RECO electron mathching the gen particle -- the electron was reconstructed, now check to see if it passes the isolation cut
+		    RecoNotMatched=false;          
+		    elecReco =2;
+		    bool IsoNotMatched=true;
+		    for (UShort_t ii=0; ii < selectedIDIsoElectronsNum_; ii++) // loop over the isolated electrons (also RECO'd and ID'd), try to find another match
+		      {
+			if(deltaR(Electrons->at(ii).Eta(),Electrons->at(ii).Phi(),selectedIDElectrons->at(i).Eta(),selectedIDElectrons->at(i).Phi())<maxDeltaRRecoToIsoElec_ && std::abs(Electrons->at(ii).Pt()-selectedIDElectrons->at(i).Pt())/Electrons->at(ii).Pt() <maxDiffPtRecoToIsoElec_)
+			  { // electron was also isolated -- we found it
+			    IsoNotMatched=false;
+			    elecIso=2;
+			    Expectation=2;
+			    mtw = selectedIDIsoElectrons_MTW->at(ii); // compute the transverse mass of the elec-MET system
+			    ElecDiLepControlSample_=2;
+			  }
+		      }
+		    if(IsoNotMatched)
+		      { // we couldn't find any isolated electron match -- the electron failed the isolation cut
+			elecIso=0;
+			Expectation=1; // lost-lepton event
+		      }
+		  }
+	      }
+	    if(RecoNotMatched)
+	      { // we couldn't find any reconstructed lepton
+		elecReco=0;
+		Expectation=1; // lost-lepton event  
+	      }
+	  }
+      } 
 
 
     // di--leptonic events -- a very small BG 

@@ -202,29 +202,29 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
 	
 
     // now calculate the full weights
-    // correct for innefficiency of control region MTW cut
-    mtwCorrectedWeight_ = Weight_ / muMTWEff_;
-    // correct for contamination of control region from di-lepton events 
-    mtwDiLepCorrectedWeight_ = mtwCorrectedWeight_ * muDiLepContributionMTWAppliedEff_;
+    // what is Weight_ (below) for MC? for data?
     // lepton efficiency weights
     // probability lepton fails isolation
-    muIsoWeight_ = mtwDiLepCorrectedWeight_* (1 - muIsoEff_)/muIsoEff_;
+    muIsoWeight_ = Weight_* (1 - muIsoEff_)/muIsoEff_;
     // probability lepton fails reconstruction
-    muRecoWeight_ = mtwDiLepCorrectedWeight_* 1 / muIsoEff_ * (1-muRecoEff_)/muRecoEff_;    
+    muRecoWeight_ = Weight_* 1 / muIsoEff_ * (1-muRecoEff_)/muRecoEff_;    
     // probability lepton out-of-acceptance
-    muAccWeight_ = mtwDiLepCorrectedWeight_* 1 / muIsoEff_ * 1 / muRecoEff_ * (1-muAccEff_)/muAccEff_;    
-    // sum the threee contributions
+    muAccWeight_ = Weight_* 1 / muIsoEff_ * 1 / muRecoEff_ * (1-muAccEff_)/muAccEff_;    
+    // sum the three contributions
     muTotalWeight_ = muIsoWeight_ + muRecoWeight_ + muAccWeight_;
+    // correct for the MTW cut efficiency and di-lepton contamination
+    muTotalWeight_ *= (muDiLepContributionMTWAppliedEff_/muMTWEff_);
+
+    // ***** now find the corresponding electron weights using the muon weights calculated above *****
     
-    // calculate the "muon term" in the electron efficiency expressions -- what does it represent
-    totalMuons_ = mtwDiLepCorrectedWeight_ / ( muIsoEff_ * muRecoEff_ * muAccEff_);
+    // calculate the "muon term" in the electron efficiency expressions -- what does it represent?
+    totalMuons_ = Weight_ * (muDiLepContributionMTWAppliedEff_/muMTWEff_) / ( muIsoEff_ * muRecoEff_ * muAccEff_);
     // use it to calculate the electron efficiencies
     elecAccWeight_ = totalMuons_ * (1 - elecAccEff_);
     elecRecoWeight_ = totalMuons_ * (elecAccEff_) * (1-elecRecoEff_);
     elecIsoWeight_ = totalMuons_ * (elecAccEff_) * (elecRecoEff_) * (1-elecIsoEff_);
-    // why did we calculate these in the reverse order from what we used for the muons
+    // why did we calculate these in the reverse order?
     elecTotalWeight_ = elecIsoWeight_ + elecRecoWeight_ + elecAccWeight_;
-    totalElectrons_ = mtwDiLepCorrectedWeight_ / ( elecIsoEff_ * elecRecoEff_ * elecAccEff_);
 
     // the the total mu+e contribution to the lost-lepton background
     totalWeight_ = elecTotalWeight_ + muTotalWeight_;
@@ -238,9 +238,9 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
 
     // add the full event weight to the per-search-bin histogram--we'll use this to assign statistical uncertainties in the next step
     if(MTW<100){
-      MuMeanWeight_->Fill(Bin_+0.01, totalWeightDiLepIsoTrackReduced_/Weight, Weight);
+      MuMeanWeight_->Fill(Bin_+0.01, totalWeightDiLepIsoTrackReducedCombined_/Weight, Weight);
       if(Bin_<=6){
-	MuWeightPerBin_[Bin_-1]->Fill(totalWeightDiLepIsoTrackReduced_/Weight,Weight);
+	MuWeightPerBin_[Bin_-1]->Fill(totalWeightDiLepIsoTrackReducedCombined_/Weight,Weight);
       }
     }
 
