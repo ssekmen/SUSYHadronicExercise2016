@@ -8,7 +8,7 @@ observation 1
 bin Bin3 Bin3 Bin3 Bin3 Bin3 
 process sig lostl hadt zvv qcd
 process 0 1 2 3 4
-rate 0.5439 0.000 0.25278 0.142706 0.07
+rate 0.5439 0.000 0.25278 0.155 0.07
 ------------------------------------
 lumi                  lnN  1.04 - - - - lumi affects signal
 signal_statbin3       lnN  1.022 - - - -
@@ -17,7 +17,7 @@ lost_statbin3         gmN  0 - 0.458317 - - -
 lost_sys3             lnN  - 0.879339/1.12066 - - -
 hadtau_statbin3       lnN  - - 0.413456/5.49838 - -
 hadtau_sys3           lnN  - - 0.971731/1.3003 - -
-zinv_statbin3         gmN  1 - - - 0.142706 - 
+zinv_statbin3         gmN  1 - - - 0.155 - 
 zinv_sys_purity       lnN  - - - 1.08 -
 zinv_sys_ZgRbin3      lnN  - - - 1.50 -
 zinv_sys_doubleratio  lnN  - - - 1.30 -

@@ -17,7 +17,7 @@ lost_statbin5         lnN  - 1.707 - - -
 lost_sys5             lnN  - 0.896678/1.10332 - - -
 hadtau_statbin5       lnN  - - 0.631624/1.52168 - -
 hadtau_sys5           lnN  - - 0.91166/1.08989 - -
-zinv_statbin5         gmN  0 - - - 0.161999 - 
+zinv_statbin5         gmN  0 - - - 0.176 - 
 zinv_sys_purity       lnN  - - - 1.08 -
 zinv_sys_ZgRbin5      lnN  - - - 1.50 -
 zinv_sys_doubleratio  lnN  - - - 1.30 -

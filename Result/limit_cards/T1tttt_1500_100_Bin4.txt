@@ -17,7 +17,7 @@ lost_statbin4         lnN  - 1.43 - - -
 lost_sys4             lnN  - 0.961415/1.0385 - - -
 hadtau_statbin4       lnN  - - 0.760594/1.28565 - -
 hadtau_sys4           lnN  - - 0.938148/1.06239 - -
-zinv_statbin4         gmN  0 - - - 0.19241 - 
+zinv_statbin4         gmN  0 - - - 0.209 - 
 zinv_sys_purity       lnN  - - - 1.08 -
 zinv_sys_ZgRbin4      lnN  - - - 1.50 -
 zinv_sys_doubleratio  lnN  - - - 1.30 -

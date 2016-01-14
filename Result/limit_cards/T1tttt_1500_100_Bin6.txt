@@ -17,7 +17,7 @@ lost_statbin6         gmN  0  - 0.559756 - - -
 lost_sys6             lnN  - 0.818793/1.1812 - - -
 hadtau_statbin6       lnN  - - 0.196471/134.739 - -
 hadtau_sys6           lnN  - - 1/1.23412 - -
-zinv_statbin6         gmN  0 - - - 0.132135 - 
+zinv_statbin6         gmN  0 - - - 0.144 - 
 zinv_sys_purity       lnN  - - - 1.08 -
 zinv_sys_ZgRbin6      lnN  - - - 1.50 -
 zinv_sys_doubleratio  lnN  - - - 1.30 -
