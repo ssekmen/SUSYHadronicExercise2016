@@ -205,11 +205,11 @@ void PredictionMaker::Run(std::string effFileName, std::string outputFileName, d
     // what is Weight_ (below) for MC? for data?
     // lepton efficiency weights
     // probability lepton fails isolation
-    muIsoWeight_ = Weight_* (1 - muIsoEff_)/muIsoEff_;
+    muIsoWeight_ = Weight* (1 - muIsoEff_)/muIsoEff_;
     // probability lepton fails reconstruction
-    muRecoWeight_ = Weight_* 1 / muIsoEff_ * (1-muRecoEff_)/muRecoEff_;    
+    muRecoWeight_ = Weight* 1 / muIsoEff_ * (1-muRecoEff_)/muRecoEff_;    
     // probability lepton out-of-acceptance
-    muAccWeight_ = Weight_* 1 / muIsoEff_ * 1 / muRecoEff_ * (1-muAccEff_)/muAccEff_;    
+    muAccWeight_ = Weight* 1 / muIsoEff_ * 1 / muRecoEff_ * (1-muAccEff_)/muAccEff_;    
     // sum the three contributions
     muTotalWeight_ = muIsoWeight_ + muRecoWeight_ + muAccWeight_;
     // correct for the MTW cut efficiency and di-lepton contamination
