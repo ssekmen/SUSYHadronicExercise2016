@@ -44,7 +44,7 @@ void setLegendStyle(TLegend* leg, float text_size=0.045, bool transparent=false)
 }
     
 // === Main Function ===================================================
-void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
+void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
 
   StyleMatters::init();
   gStyle->SetEndErrorSize(0);
