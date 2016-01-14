@@ -8,7 +8,7 @@ observation 9
 bin Bin2 Bin2 Bin2 Bin2 Bin2 
 process sig lostl hadt zvv qcd
 process 0 1 2 3 4
-rate 0.3323 6.08024 8.08873 1.3897 1.69
+rate 0.3323 6.08024 8.08873 1.511 1.69
 ------------------------------------
 lumi                  lnN  1.04 - - - - lumi affects signal
 signal_statbin2       lnN  1.03 - - - -
@@ -17,7 +17,7 @@ lost_statbin2         lnN  - 1.3333 - - -
 lost_sys2             lnN  - 0.901561/1.09844 - - -
 hadtau_statbin2       lnN  - - 0.823634/1.20203 - -
 hadtau_sys2           lnN  - - 0.910652/1.09147 - -
-zinv_statbin2         gmN  2 - - - 0.694851 - 
+zinv_statbin2         gmN  2 - - - 0.616 - 
 zinv_sys_purity       lnN  - - - 1.08 -
 zinv_sys_ZgRbin2      lnN  - - - 1.50 -
 zinv_sys_doubleratio  lnN  - - - 1.30 -
