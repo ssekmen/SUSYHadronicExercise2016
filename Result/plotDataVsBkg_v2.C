@@ -44,7 +44,7 @@ void setLegendStyle(TLegend* leg, float text_size=0.045, bool transparent=false)
 }
     
 // === Main Function ===================================================
-void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
+void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
 
   StyleMatters::init();
   gStyle->SetEndErrorSize(0);
@@ -59,10 +59,10 @@ void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
   // for number of estimated backgrounds
   // check these numbers
   double NLostLepton[Nbins] = {19.35160, 6.06048,0.00,1.99132,0.56454,0.0};
-  double LostLeptonStatUp[Nbins] = {2.6,1.5,1.14,1.1,1.6,1.05};
-  double LostLeptonStatDn[Nbins] = {2.5,1.3,0.00,0.9,1.4,0.13};
-  double LostLeptonSystUp[Nbins] = {1.7,0.5,0.08,0.3,0.3,0.05};
-  double LostLeptonSystDn[Nbins] = {1.7,0.5,0.01,0.3,0.3,0.00};
+  double NLostLeptonStatUp[Nbins] = {3.49504,2.16791,0.84000,1.11439,0.81913,1.02702};
+  double NLostLeptonStatDn[Nbins] = {3.40744,2.02184,0.00,0.85748,0.39923,0.0};
+  double NLostLeptonSystUp[Nbins] = {0.63869,0.62276,0.0,0.07717,0.06083,0.0};
+  double NLostLeptonSystDn[Nbins] = {0.63869,0.62276,0.00000,0.07717,0.06083,0.00};
   // check ends
 
   double NHadronicTau[Nbins]     = {28.6,8.1,0.25,5.1,2.2,0.01};
@@ -92,6 +92,9 @@ void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
 
   //
   // Setting up search region data histogram
+
+
+  
   TH1F *hData = new TH1F("hData",";Search Bins;Events",6,0.5,6.5);
   hData->Sumw2();
   for (int ibin=1; ibin<=hData->GetNbinsX(); ibin++){
@@ -137,6 +140,45 @@ void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
   hBkgYieldsStack->Add(hHadronicTau);
   hBkgYieldsStack->Add(hLostLepton);
   //  hBkgYieldsStack->Print("all");
+
+  // get background uncertainty graph
+  Double_t x[6];
+  Double_t xl[6];
+  Double_t xh[6];
+  
+  Double_t data_cv[6];
+  
+  Double_t pred_cv[6];
+  Double_t full_stat_up[6];
+  Double_t full_stat_down[6];
+  Double_t full_syst_up[6];
+  Double_t full_syst_down[6];
+  Double_t full_err_up[6];
+  Double_t full_err_down[6];
+
+  for (unsigned int bin(0); bin<6; bin++) {
+    x[bin] = bin+1;
+    xl[bin]=0.5;
+    xh[bin]=0.5;
+
+    pred_cv[bin]=NLostLepton[bin]+NHadronicTau[bin]+NZinv[bin]+NQCD[bin];
+    //if (pred_cv[bin]<logmin&&pred_cv[bin]>0) pred_cv[bin]=logmin+0.005; 
+    double wtop_stat_up = NLostLeptonStatUp[bin]+NHadronicTauStatUp[bin];
+    double wtop_stat_down = NLostLeptonStatDn[bin]+NHadronicTauStatDn[bin];
+    full_stat_up[bin] = sqrt(pow(wtop_stat_up,2.)+pow(NQCDStatUp[bin],2.)+pow(NZinvStatUp[bin],2.));
+    full_stat_down[bin] = sqrt(pow(wtop_stat_down,2.)+pow(NQCDStatDn[bin],2.)+pow(NZinvStatDn[bin],2.));
+    full_syst_up[bin] = sqrt(pow(NLostLeptonSystUp[bin],2.)+pow(NHadronicTauSystUp[bin],2.)+pow(NQCDSystUp[bin],2.)+pow(NZinvSystUp[bin],2.));
+    full_syst_down[bin] = sqrt(pow(NLostLeptonSystDn[bin],2.)+pow(NHadronicTauSystDn[bin],2.)+pow(NQCDSystDn[bin],2.)+pow(NZinvSystDn[bin],2.));
+    full_err_up[bin] = sqrt(pow(full_stat_up[bin], 2.)+pow(full_syst_up[bin], 2.));
+    full_err_down[bin] = sqrt(pow(full_stat_down[bin], 2.)+pow(full_syst_down[bin], 2.));
+  }
+  TGraphAsymmErrors* gbgerr = new TGraphAsymmErrors(6, x, pred_cv, xl, xh, full_err_down, full_err_up);
+  gbgerr->SetFillColor(14);
+  gbgerr->SetMarkerSize(0);
+  gbgerr->SetLineWidth(0);
+  gbgerr->SetLineColor(0);
+  gbgerr->SetFillStyle(3445);
+  
 
     // // Setup legends
   TLegend * legdata;
@@ -231,6 +273,7 @@ void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
   pad1->SetLogy();
   hBkgYieldsStack->SetMaximum(5000.);
   hBkgYieldsStack->Draw("HIST");
+  gbgerr->Draw("2 same");
   //  hData->Draw("PESAME");
   gData->Draw("PSAME");
   legdata->Draw("same");
@@ -262,9 +305,10 @@ void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
 
   TH1D * ratio = (TH1D *) hData->Clone("ratio");
   ratio->Reset();
-  ratio->SetMaximum(0.6);
-  ratio->SetMinimum(-0.6);
-  ratio->GetXaxis()->SetLabelSize(0.12);
+  ratio->SetMaximum(1.3);
+  ratio->SetMinimum(-1.3);
+  ratio->GetXaxis()->SetLabelSize(0.134);
+  ratio->GetXaxis()->SetLabelOffset(ratio->GetXaxis()->GetLabelOffset()*1.5);
   ratio->GetXaxis()->SetTitleSize(0.14);
   ratio->GetXaxis()->SetTitleOffset(1.1);
   ratio->GetXaxis()->SetTitleFont(42);
@@ -277,9 +321,11 @@ void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
   ratio->GetYaxis()->SetNdivisions(505);
   ratio->GetYaxis()->SetTickLength(0.015);
   ratio->GetXaxis()->SetTickLength(0.08);
+  ratio->SetLineWidth(0);
+  ratio->SetMarkerSize(0);
 
-  TString cut_labels[6] = {"#splitline{N_{b-jet} = 2}{200 < H_{T}^{ miss} < 500}","#splitline{N_{b-jet} #geq 3}{200 < H_{T}^{ miss} < 500}","#splitline{N_{b-jet} #geq 2}{H_{T}^{ miss} > 500}",
-			"#splitline{N_{b-jet} = 2}{200 < H_{T}^{ miss} < 500}","#splitline{N_{b-jet} #geq 3}{200 < H_{T}^{ miss} < 500}","#splitline{N_{b-jet} #geq 2}{H_{T}^{ miss} > 500}"};
+  TString cut_labels[6] = {"#splitline{   N_{b-jet} = 2}{H_{T}^{ miss}: 200-500}","#splitline{   N_{b-jet} #geq 3}{H_{T}^{ miss}: 200-500}","#splitline{   N_{b-jet} #geq 2}{H_{T}^{ miss}: 500+}",
+			"#splitline{   N_{b-jet} = 2}{H_{T}^{ miss}: 200-500}","#splitline{   N_{b-jet} #geq 3}{H_{T}^{ miss}: 200-500}","#splitline{   N_{b-jet} #geq 2}{H_{T}^{ miss}: 500+}"};
   for (int i=1;i<=6;i++) {
     ratio->GetXaxis()->SetBinLabel(i,cut_labels[i-1].Data());
   }
@@ -287,11 +333,36 @@ void plotDataVsBkg(const TString &graphicsFormat = "pdf"){
   TGraphAsymmErrors* gRatio = GetDataRatioTGraph(gData, hData, hLostLepton, hHadronicTau, hZinv, hQCD);
   setStyle(gRatio,1);
 
-  ratio->Draw();
-  TLine* ratiounity = new TLine(0.5,1,6.5,1);
-  ratiounity->SetLineStyle(2);
+  TH1D* hbg_sum = new TH1D("hbg_sum",";Search Bins;Events",6,0.5,6.5);
+  hbg_sum->Add(hLostLepton);
+  hbg_sum->Add(hHadronicTau);
+  hbg_sum->Add(hZinv);
+  hbg_sum->Add(hQCD);
+  
+  TGraphAsymmErrors* ratiogerr = new TGraphAsymmErrors(gbgerr->GetN(), gbgerr->GetX(), gbgerr->GetY(), gbgerr->GetEXlow(), gbgerr->GetEXhigh(), gbgerr->GetEYlow(), gbgerr->GetEYhigh());
+  for (Int_t i = 0; i < gbgerr->GetN(); i++) {
+    ratiogerr->SetPoint(i, i+1, 0.);
+    if (hbg_sum->GetBinContent(i+1)>0) {
+      ratiogerr->SetPointError(i, 0.5, 0.5, ratiogerr->GetErrorYlow(i)/hbg_sum->GetBinContent(i+1), ratiogerr->GetErrorYhigh(i)/hbg_sum->GetBinContent(i+1));
+    }
+    else {
+      ratiogerr->SetPointError(i, 0.5, 0.5, 0., 5.);
+    }
+  }
+
+  ratiogerr->SetFillColor(14);
+  ratiogerr->SetMarkerSize(0);
+  ratiogerr->SetLineWidth(0);
+  ratiogerr->SetLineColor(0);
+  ratiogerr->SetFillStyle(3445);
+  
+
+  ratio->Draw("axis");
+  TLine* ratiozero = new TLine(0.5,0,6.5,0);
+  ratiozero->SetLineStyle(2);
     
-  ratiounity->Draw();
+  ratiozero->Draw();
+  ratiogerr->Draw("2 SAME");
   gRatio->Draw("PSAME");
   gPad->RedrawAxis();
 

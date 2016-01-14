@@ -56,8 +56,8 @@ TGraphAsymmErrors* GetDataRatioTGraph(TGraphAsymmErrors* gdata_obs, TH1* hdata_o
     }
   }
 
-  // gdata_obs->Print("all");
-  // hbg_pred->Print("all");
+  gdata_obs->Print("all");
+  hbg_pred->Print("all");
   
   return ratioderr;
 					     
