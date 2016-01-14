@@ -29,11 +29,13 @@ void plotDataVsBkg(const TString &graphicsFormat = "png"){
   double Nobs[Nbins] = {53.,9.,1.,8.,1.,0.};
   // 
   // for number of estimated backgrounds
+  // check these numbers
   double NLostLepton[Nbins] = {21.2,5.0,0.00,3.1,2.7,0.13};
   double LostLeptonStatUp[Nbins] = {2.6,1.5,1.14,1.1,1.6,1.05};
   double LostLeptonStatDn[Nbins] = {2.5,1.3,0.00,0.9,1.4,0.13};
   double LostLeptonSystUp[Nbins] = {1.7,0.5,0.08,0.3,0.3,0.05};
   double LostLeptonSystDn[Nbins] = {1.7,0.5,0.01,0.3,0.3,0.00};
+  // check ends
 
   double NHadronicTau[Nbins]     = {28.6,8.1,0.25,5.1,2.2,0.01};
   double NHadronicTauStatUp[Nbins]     = {2.7,1.6,1.13,1.5,1.1,1.13};
@@ -41,11 +43,13 @@ void plotDataVsBkg(const TString &graphicsFormat = "png"){
   double NHadronicTauSystUp[Nbins]     = {1.5,0.7,0.08,0.3,0.2,0.00};
   double NHadronicTauSystDn[Nbins]     = {1.5,0.7,0.01,0.3,0.2,0.00};
 
+  // check these numbers
   double NZinv[Nbins]       = {5.414,1.511,0.155,0.000,0.000,0.000};
   double NZinvStatUp[Nbins]       = {1.313,1.068,0.155,0.376,0.317,0.259};
   double NZinvStatDn[Nbins]       = {1.313,1.068,0.155,0.000,0.000,0.000};
   double NZinvSystUp[Nbins]       = {1.209,0.657,0.081,0.104,0.052,0.034};
   double NZinvSystDn[Nbins]       = {1.060,0.631,0.067,0.091,0.048,0.030};
+  // check ends
 
   double NQCD[Nbins]        = {5.6,1.7,0.07,1.5,0.3,0.00};
   double NQCDStatUp[Nbins]        = {0.8,0.7,0.23,0.5,0.3,0.20};
