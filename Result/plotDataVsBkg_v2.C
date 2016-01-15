@@ -3,6 +3,8 @@
 #include "../Utils/StyleMatters.h"
 #include "../Utils/HistReader.h"
 #include "../Utils/Graphs.h"
+#include "../LostLepton/CMS_lumi.C"
+#include "../LostLepton/tdrstyle.C"
 
 // === Helper Functions ================================================
 // Set the histogram style according to the sample id
@@ -49,7 +51,6 @@ void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
   StyleMatters::init();
   gStyle->SetEndErrorSize(0);
 
-  const int canSize = 500;
 
   // Define inputs
   // for number of observed events in data in search regions
@@ -122,7 +123,6 @@ void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
   hQCD->Sumw2();
 
 
-  TH1F *hdummy  = new TH1F("hdummy","hdummy",6,0.5,6.5);
 
   THStack* hBkgYieldsStack = new THStack("hBkgYieldsStack",";Search bins;Events");
   for (int ibin=1;ibin<=Nbins;ibin++){
@@ -146,7 +146,6 @@ void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
   Double_t xl[6];
   Double_t xh[6];
   
-  Double_t data_cv[6];
   
   Double_t pred_cv[6];
   Double_t full_stat_up[6];
@@ -244,7 +243,6 @@ void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
 
   double up_height     = 0.8;  // please tune so that the upper figures size will meet your requirement
   double dw_correction = 1.30; // please tune so that the smaller canvas size will work in your environment
-  double font_size_dw  = 0.1;  // please tune the font size parameter for bottom figure
   double dw_height     = (1. - up_height) * dw_correction;
   double dw_height_offset = 0.02; // KH, added to put the bottom one closer to the top panel
 
@@ -272,6 +270,7 @@ void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
   pad1->cd();
   pad1->SetLogy();
   hBkgYieldsStack->SetMaximum(5000.);
+  hBkgYieldsStack->SetMinimum(0.01);
   hBkgYieldsStack->Draw("HIST");
   gbgerr->Draw("2 same");
   //  hData->Draw("PESAME");
@@ -298,6 +297,23 @@ void plotDataVsBkg_v2(const TString &graphicsFormat = "pdf"){
   ttext_njet->SetTextAlign(22);
   ttext_njet->DrawLatex(1.2, 200. , "7 #leq N_{jets} #leq 8");
   ttext_njet->DrawLatex(4, 200. , "N_{jets} #geq 9");
+
+  TString line = "";
+  char tempname[200];
+  double lumi     = 2.3;			
+  sprintf(tempname,"%8.1f",lumi);
+  line+=tempname;
+  line+=" fb^{-1} (13 TeV)";
+  
+  int iPeriod = 0;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 0=free form (uses lumi_sqrtS)
+  int iPos=0;
+    
+  writeExtraText = true;  
+  extraText   = "                  Preliminary";
+  TString lumi_sqrtS = line;
+
+  CMS_lumi(canv, iPeriod, iPos, lumi_sqrtS);
+
 
   pad2->cd();
   pad2->SetGridy(0);
