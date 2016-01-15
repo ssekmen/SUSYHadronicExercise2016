@@ -114,6 +114,10 @@ std::vector<TString> Sample::fileNameFullSample(unsigned int id, std::vector<dou
     name = path_+"tree_signal/tree_T1tttt_1500_100_fast.root"; nameVec.push_back(name); xSecVec.push_back(0.0141903); nEvtVec.push_back(105596);
   } else if( id == 34  ){
     name = path_+"tree_signal/tree_T1tttt_1600_100_fast.root"; nameVec.push_back(name); xSecVec.push_back(0.00810078); nEvtVec.push_back(53985); 
+  } else if( id == 35  ){
+    name = path_+"tree_signal/tree_T1tttt_1700_100_fast.root"; nameVec.push_back(name); xSecVec.push_back(0.00470323); nEvtVec.push_back(55465); 
+  } else if( id == 36  ){
+    name = path_+"tree_signal/tree_T1tttt_1800_100_fast.root"; nameVec.push_back(name); xSecVec.push_back(0.00276133); nEvtVec.push_back(56888); 
 // 
   // W+jets individual HT bins
   } else if( id == 111  ){
@@ -148,13 +152,12 @@ TString Sample::label(unsigned int id) {
   else if( id == 14  ) label += "QCD";
   else if( id == 21  ) label += "T1tttt(1500,100)";
   else if( id == 22  ) label += "T1tttt(1200,800)";
-  else if( id == 31  ) label += "T1tttt(1200,100) fastsim";
-  else if( id == 32  ) label += "T1tttt(1300,100) fastsim";
-  else if( id == 33  ) label += "T1tttt(1400,100) fastsim";
-  else if( id == 34  ) label += "T1tttt(1500,100) fastsim";
-  else if( id == 35  ) label += "T1tttt(1600,100) fastsim";
-  else if( id == 36  ) label += "T1tttt(1700,100) fastsim";
-  else if( id == 37  ) label += "T1tttt(1800,100) fastsim";
+  else if( id == 31  ) label += "T1tttt(1300,100) fastsim";
+  else if( id == 32  ) label += "T1tttt(1400,100) fastsim";
+  else if( id == 33  ) label += "T1tttt(1500,100) fastsim";
+  else if( id == 34  ) label += "T1tttt(1600,100) fastsim";
+  else if( id == 35  ) label += "T1tttt(1700,100) fastsim";
+  else if( id == 36  ) label += "T1tttt(1800,100) fastsim";
   else if( id == 111 ) label += "W(l#nu)+Jets HT=[100,200] GeV";
   else if( id == 112 ) label += "W(l#nu)+Jets HT=[200,400] GeV";
   else if( id == 113 ) label += "W(l#nu)+Jets HT=[400,600] GeV";
@@ -187,6 +190,8 @@ TString Sample::toTString(unsigned int id) {
   else if( id == 32  ) str += "T1tttt_1400_100_fastsim";
   else if( id == 33  ) str += "T1tttt_1500_100_fastsim";
   else if( id == 34  ) str += "T1tttt_1600_100_fastsim";
+  else if( id == 35  ) str += "T1tttt_1700_100_fastsim";
+  else if( id == 36  ) str += "T1tttt_1800_100_fastsim";
   else if( id == 111  ) str += "WJets_HT-100to200";
   else if( id == 112  ) str += "WJets_HT-200to400";
   else if( id == 113  ) str += "WJets_HT-400to600";
@@ -236,7 +241,7 @@ void Sample::checkId(unsigned int id) {
   if( id != 1 
       && !(id >=  11 && id <= 14) 
       && !(id >=  21 && id <= 22) 
-      && !(id >=  31 && id <= 34) 
+      && !(id >=  31 && id <= 36) 
       && !(id >= 111 && id <= 117)
       && !(id >= 121 && id <= 124)
       ) {
