@@ -59,12 +59,12 @@ void ControlRegion_Input(){
      double HTbins[14]={500.,600.,700,800,900,1000.,1100,1200.,1300,1400,1500,1700,2000,3000};
      double MHTbins[8]={200.,300,400,500.,600,750.,1000,1500.};
      double NJetsbins[7]={4,5,6,7,8,9,12};
-
+     double BJetsbins[7]={0,1,2,3,4,5,6};
      //nothing to change here ..this line just numbers of bins in the CR plot
      int nBinsHT=sizeof(HTbins)/sizeof(HTbins[0]) -1;
      int nBinsMHT=sizeof(MHTbins)/sizeof(MHTbins[0]) -1;
      int nBinsNJ=sizeof(NJetsbins)/sizeof(NJetsbins[0]) -1;
-
+     int nBinsBJ=sizeof(BJetsbins)/sizeof(BJetsbins[0]) -1;
 
 
      //number of search bins in your analysis
@@ -74,10 +74,14 @@ void ControlRegion_Input(){
      TH1F *hHT_GJets=new TH1F("hHT_GJets","hHT_GJets",nBinsHT,HTbins);
      TH1F *hMHT_GJets=new TH1F("hMHT_GJets","hMHT_GJets",nBinsMHT,MHTbins);
      TH1F *hNJets_GJets=new TH1F("hNJets_GJets","hNJets_GJets",nBinsNJ,NJetsbins);
+     TH1F *hBJets_GJets=new TH1F("hBJets_GJets","hBJets_GJets",nBinsBJ,BJetsbins);
+
 
      TH1F *hHT_QCD=new TH1F("hHT_QCD","hHT_QCD",nBinsHT,HTbins);
      TH1F *hMHT_QCD=new TH1F("hMHT_QCD","hMHT_QCD",nBinsMHT,MHTbins);
      TH1F *hNJets_QCD=new TH1F("hNJets_QCD","hNJets_QCD",nBinsNJ,NJetsbins);
+     TH1F *hBJets_QCD=new TH1F("hBJets_QCD","hBJets_QCD",nBinsBJ,BJetsbins);
+
 
      TH1F *hHT_DYm=new TH1F("hHT_DYm","hHT_DYm",nBinsHT,HTbins);
      TH1F *hMHT_DYm=new TH1F("hMHT_DYm","hMHT_DYm",nBinsMHT,MHTbins);
@@ -91,6 +95,8 @@ void ControlRegion_Input(){
      TH1F *hHT_DataGJ=new TH1F("hHT_DataGJ","hHT_DataGJ",nBinsHT,HTbins);
      TH1F *hMHT_DataGJ=new TH1F("hMHT_DataGJ","hMHT_DataGJ",nBinsMHT,MHTbins);
      TH1F *hNJets_DataGJ=new TH1F("hNJets_DataGJ","hNJets_DataGJ",nBinsNJ,NJetsbins);
+     TH1F *hBJets_DataGJ=new TH1F("hBJets_DataGJ","hBJets_DataGJ",nBinsBJ,BJetsbins);
+
 
      TH1F *hHT_DataDYm=new TH1F("hHT_DataDYm","hHT_DataDYm",nBinsHT,HTbins);
      TH1F *hMHT_DataDYm=new TH1F("hMHT_DataDYm","hMHT_DataDYm",nBinsMHT,MHTbins);
@@ -142,6 +148,8 @@ void ControlRegion_Input(){
          hHT_GJets->Fill(GJets.HT,Lumi*GJets.Weight);
          hMHT_GJets->Fill(GJets.MHT,Lumi*GJets.Weight);
          hNJets_GJets->Fill(GJets.NJets,Lumi*GJets.Weight);
+         hBJets_GJets->Fill(GJets.BTags,Lumi*GJets.Weight);
+
             }
 
 
@@ -172,6 +180,8 @@ void ControlRegion_Input(){
          hHT_QCD->Fill(QCD.HT,Lumi*QCD.Weight);
          hMHT_QCD->Fill(QCD.MHT,Lumi*QCD.Weight);
          hNJets_QCD->Fill(QCD.NJets,Lumi*QCD.Weight);
+         hBJets_QCD->Fill(QCD.BTags,Lumi*QCD.Weight);
+
             }
 
 
@@ -204,6 +214,8 @@ void ControlRegion_Input(){
          hHT_DataGJ->Fill(DataGJ.HT);
          hMHT_DataGJ->Fill(DataGJ.MHT);
          hNJets_DataGJ->Fill(DataGJ.NJets);
+         hBJets_DataGJ->Fill(DataGJ.BTags);
+
             }
                   if(DataGJ.BinNumber() > -1){//
                 if(DataGJ.isBarrelPhoton()==true){//barrel
@@ -275,17 +287,19 @@ void ControlRegion_Input(){
  
      f->Write();
 
-     TCanvas *c[5];//initializes 5 canvases .you can create more if you decide to somesomething else
+     TCanvas *c[7];//initializes 5 canvases .you can create more if you decide to somesomething else
      DataMC plot;//A class for plotting stacked MC vs data ,the cuts and legends are set as Photon CR cuts,look Stack.C 
 
      //HT,MHT,NJets distributions
      plot.Stack(hHT_DataGJ,hHT_GJets,hHT_QCD,c[0],"","Data","MC","HT");
      plot.Stack(hMHT_DataGJ,hMHT_GJets,hMHT_QCD,c[1],"","Data","MC","MHT");
      plot.Stack(hNJets_DataGJ,hNJets_GJets,hNJets_QCD,c[2],"","Data","MC","Njets");
+     plot.Stack(hBJets_DataGJ,hBJets_GJets,hBJets_QCD,c[3],"","Data","MC","Bjets");
+
 
      //distributions of number of observed(Data and MC ) photons for barrel and endcap 
-     plot.Stack(hSearchBins_DataGJ_EB,hSearchBins_GJets_EB,hSearchBins_QCD_EB,c[3],"EB","Data","MC","Search_Bin_Number_Barrel");
-     plot.Stack(hSearchBins_DataGJ_EE,hSearchBins_GJets_EE,hSearchBins_QCD_EE,c[4],"EE","Data","MC","Search_Bin_Number_Endcap");
+     plot.Stack(hSearchBins_DataGJ_EB,hSearchBins_GJets_EB,hSearchBins_QCD_EB,c[4],"EB","Data","MC","Search_Bin_Number_Barrel");
+     plot.Stack(hSearchBins_DataGJ_EE,hSearchBins_GJets_EE,hSearchBins_QCD_EE,c[5],"EE","Data","MC","Search_Bin_Number_Endcap");
      
 
 }
