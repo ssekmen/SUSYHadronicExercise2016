@@ -2,7 +2,7 @@
 // This class has been automatically generated on
 // Wed Jan  6 13:07:06 2016 by ROOT version 6.02/05
 // from TTree PreSelection/PreSelection
-// found on file: /eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root
+// found on file: root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root
 //////////////////////////////////////////////////////////
 
 #ifndef PredictionMaker_h
@@ -250,11 +250,11 @@ PredictionMaker::PredictionMaker(TTree *tree) : fChain(0)
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
   if (tree == 0) {
-    TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root");
+    TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root");
     if (!f || !f->IsOpen()) {
-      f = new TFile("/eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root");
+      f = TFile::Open("root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root");
     }
-    TDirectory * dir = (TDirectory*)f->Get("/eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root:/TreeMaker2");
+    TDirectory * dir = (TDirectory*)f->Get("root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV5/Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_22_RA2AnalysisTree.root:/TreeMaker2");
     dir->GetObject("PreSelection",tree);
 
   }

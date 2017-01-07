@@ -14,8 +14,8 @@ void PhotonCR_Input(){
      //Creates a root file that will store all the histograms needed for prediction later
      TFile *f =new TFile("PhotonCR_Input.root","RECREATE"); 
      //Location of Ntuples
-     //TString InputFilePath="/eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/Run2ProductionV5/";
-     TString InputFilePath="/eos/uscms/store/user/cmsdas/2017/long_exercises/SUSYHadronic/";
+     //TString InputFilePath="root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/Run2ProductionV5/";
+     TString InputFilePath="root://cmseos.fnal.gov//store/user/cmsdas/2017/long_exercises/SUSYHadronic/";
      
 
      //Reads GJets MC Ntuples
