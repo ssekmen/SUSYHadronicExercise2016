@@ -48,7 +48,7 @@ private:
 //  static vector<double> xSecVec;
 };
 
-TString Sample::path_ = "root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/";
+TString Sample::path_ = "root://cmseos.fnal.gov//store/user/cmsdas/2017/long_exercises/SUSYHadronic/";
 
 std::vector<TString> Sample::fileNameFullSample(unsigned int id, std::vector<double> &xSecVec, std::vector<int> &nEvtVec) {
   xSecVec.clear(); nEvtVec.clear();

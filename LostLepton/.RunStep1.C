@@ -12,24 +12,24 @@ void RunStep1() {
   
   TChain* mc = new TChain("tree");
   // ttbar
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_TTJets_HT-600to800.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_TTJets_HT-800to1200.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_TTJets_HT-1200to2500.root");  
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_TTJets_HT-2500toInf.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_TTJets_HT-600to800.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_TTJets_HT-800to1200.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_TTJets_HT-1200to2500.root");  
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_TTJets_HT-2500toInf.root");
   // W+jets
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-100to200.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-200to400.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-400to600.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-600to800.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-800to1200.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-1200to2500.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_WJetsToLNu_HT-2500toInf.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_WJetsToLNu_HT-100to200.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_WJetsToLNu_HT-200to400.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_WJetsToLNu_HT-400to600.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_WJetsToLNu_HT-600to800.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_WJetsToLNu_HT-800to1200.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_WJetsToLNu_HT-1200to2500.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_WJetsToLNu_HT-2500toInf.root");
   // single top
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_s-channel.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_t-channel_top.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_t-channel_antitop.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_tW_top.root");
-  mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_ST_tW_antitop.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_ST_s-channel.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_ST_t-channel_top.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_ST_t-channel_antitop.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_ST_tW_top.root");
+  mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_ST_tW_antitop.root");
  
   ExpectationMaker* exp_mkr = new ExpectationMaker(mc);
   exp_mkr->Run("Expectation_1.root");
@@ -40,9 +40,9 @@ void RunStep1() {
   // these are inclusive in genHT, so they overlap with the genHT-binned samples listed above
   // must require genHT<600 to avoid double-counting
   TChain* inc_mc = new TChain("tree");
-  inc_mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_TTJets_DiLept.root");
-  inc_mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_TTJets_SingleLeptFromTbar.root");
-  inc_mc->Add("root://cmseos.fnal.gov///store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/tree_SL/tree_TTJets_SingleLeptFromT.root");
+  inc_mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_TTJets_DiLept.root");
+  inc_mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_TTJets_SingleLeptFromTbar.root");
+  inc_mc->Add("root://cmseos.fnal.gov///store/user/cmsdas/2017/long_exercises/SUSYHadronic/tree_SL/tree_TTJets_SingleLeptFromT.root");
 
   ExpectationMaker* inc_exp_mkr = new ExpectationMaker(inc_mc);
   inc_exp_mkr->Run("Expectation_2.root",600);

@@ -15,7 +15,7 @@ void PhotonCR_Input(){
      TFile *f =new TFile("PhotonCR_Input.root","RECREATE"); 
      //Location of Ntuples
      //TString InputFilePath="/eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/Run2ProductionV5/";
-     TString InputFilePath="/eos/uscms/store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/CMSDAS2016/";
+     TString InputFilePath="/eos/uscms/store/user/cmsdas/2017/long_exercises/SUSYHadronic/";
      
 
      //Reads GJets MC Ntuples
