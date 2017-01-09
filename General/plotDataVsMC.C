@@ -47,7 +47,7 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
 
   // Get the bkg distributions
   const int kNBkgSamples = 4;
-  unsigned int ids[kNBkgSamples] = { 14, 12, 13, 11 };
+  unsigned int ids[kNBkgSamples] = { 14, 12, 13, 11};
   THStack* hBkgNJets = new THStack("hBkgNJets",";N(jets);Events");
   THStack* hBkgHt = new THStack("hBkgHt",";H_{T} [GeV];Events");
   THStack* hBkgMht = new THStack("hBkgMht",";#slash{H}_{T} [GeV];Events");
@@ -130,8 +130,8 @@ void plotDataVsMC(const TString &graphicsFormat = "png") {
   }
   printf(" Total               :");
   std::cout << std::endl;
-  double BkgTotal[6]={0.,0.,0.,0.,0.,0.};
-  double BkgTotalError[6]={0.,0.,0.,0.,0.,0.};
+  double BkgTotal[7]={0.,0.,0.,0.,0.,0.};
+  double BkgTotalError[7]={0.,0.,0.,0.,0.,0.};
   for(int bin = 1; bin <= hDataYields->GetNbinsX(); ++bin) {
     std::cout << hDataYields->GetXaxis()->GetBinLabel(bin) << " : \t" << std::flush;
     printf("%8.1f +/- ",hDataYields->GetBinContent(bin));
