@@ -12,42 +12,64 @@ void ControlRegion_Input(){
     
      
      //Creates a root file that will store all the histograms needed for prediction later
-     TFile *f =new TFile("ControlRegion_Input.root","RECREATE"); 
+     TFile *f = TFile::Open("ControlRegion_Input.root","RECREATE"); 
      //Location of Ntuples
      //TString InputFilePath="root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Skims/Run2ProductionV5/";
      TString InputFilePath="root://cmseos.fnal.gov//store/user/cmsdas/2017/long_exercises/SUSYHadronic/";
      
      //Reads Zinv MC Ntuples
      TChain* tZinv = new TChain("tree");
-     tZinv->Add(InputFilePath+"tree_signal/tree_ZJetsToNuNu_HT*.root");
+     tZinv->Add(InputFilePath+"tree_signal/tree_ZJetsToNuNu_HT-100to200.root");
+     tZinv->Add(InputFilePath+"tree_signal/tree_ZJetsToNuNu_HT-200to400.root");
+     tZinv->Add(InputFilePath+"tree_signal/tree_ZJetsToNuNu_HT-400to600.root");
+     tZinv->Add(InputFilePath+"tree_signal/tree_ZJetsToNuNu_HT-600toInf.root");
      ReadTree Zinv(tZinv);
 
      //Reads GJets MC Ntuples
      TChain* tGJets = new TChain("tree");
-     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-*.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-100to200.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-200to400.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-400to600.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-600toInf.root");
      ReadTree GJets(tGJets);
 
      //reads QCD MC Ntuples
      TChain* tQCD = new TChain("tree");
-     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT*.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-200to300.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-300to500.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-500to700.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-700to1000.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-1000to1500.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-1500to2000.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-2000toInf.root");
      ReadTree QCD(tQCD);
 
      TChain* tDYm = new TChain("tree");
-     tDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_DYJetsToLL_M-50_HT-*.root");
+     tDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_DYJetsToLL_M-50_HT-100to200.root");
+     tDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_DYJetsToLL_M-50_HT-200to400.root");
+     tDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_DYJetsToLL_M-50_HT-400to600.root");
+     tDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_DYJetsToLL_M-50_HT-600toInf.root");
      ReadTree DYm(tDYm);
 
      TChain* tTTJ = new TChain("tree");
-     tTTJ->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_TTJets_HT-*.root");
+     tTTJ->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_TTJets_HT-600to800.root");
+     tTTJ->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_TTJets_HT-800to1200.root");
+     tTTJ->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_TTJets_HT-1200to2500.root");
+     tTTJ->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_TTJets_HT-2500toInf.root");
      ReadTree TTJ(tTTJ);
 
      //Reads Data Ntuples
      TChain* tDataGJ = new TChain("tree");
-     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_*.root");
+     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_re2015C.root");
+     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_re2015D.root");
+     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_2015Db.root");
      ReadTree DataGJ(tDataGJ);
 
 
      TChain* tDataDYm = new TChain("tree");
-     tDataDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_SingleMuon_*.root");
+     tDataDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_SingleMuon_re2015C.root");
+     tDataDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_SingleMuon_re2015D.root");
+     tDataDYm->Add(InputFilePath+"tree_DYm_CleanVarsDY/tree_SingleMuon_2015Db.root");
      ReadTree DataDYm(tDataDYm);
 
 
