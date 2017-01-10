@@ -20,17 +20,28 @@ void PhotonCR_Input(){
 
      //Reads GJets MC Ntuples
      TChain* tGJets = new TChain("tree");
-     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-*.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-100to200.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-200to400.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-400to600.root");
+     tGJets->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_GJets_HT-600toInf.root");
      ReadTree GJets(tGJets);
 
      //reads QCD MC Ntuples
      TChain* tQCD = new TChain("tree");
-     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT*.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-200to300.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-300to500.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-500to700.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-700to1000.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-1000to1500.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-1500to2000.root");
+     tQCD->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_QCD_HT-2000toInf.root");
      ReadTree QCD(tQCD);
 
      //Reads Data Ntuples
      TChain* tDataGJ = new TChain("tree");
-     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_*.root");
+     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_re2015C.root");
+     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_re2015D.root");
+     tDataGJ->Add(InputFilePath+"tree_GJet_CleanVarsGJloose/tree_SinglePhoton_2015Db.root");
      ReadTree DataGJ(tDataGJ);
 
 
